@@ -14,7 +14,7 @@
         <script src="https://unpkg.com/feather-icons"></script>
     </head>
     <body>
-        <form id="login-form">
+        <form id="loginForm">
             @csrf
             <div class="login-wrapper">
                 <div class="logo-area">
@@ -43,7 +43,7 @@
                             name="password"
                         />
                     </div>
-                    <button>LOGIN</button>
+                    <button type="submit">LOGIN</button>
                 </div>
             </div>
         </form>
