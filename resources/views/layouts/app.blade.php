@@ -1,39 +1,47 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-
-        <title>{{ config('app.name', 'Laravel') }}</title>
-
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-            {{-- @include('layouts.navigation') --}}
-
-
-            <!-- Page Heading -->
-            @if (isset($header))
-                <header class="bg-white dark:bg-gray-800 shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endif
-
-            <!-- Page Content -->
-            <main>
-                @yield('content')
-            </main>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <!-- font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <!-- css -->
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
+    <!-- feather icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <div class="login-wrapper">
+        <!-- Logo area -->
+        <div class="logo-area">
+            <img src="{{ asset('images/Logo SIG.png') }}" alt="Logo SIG">
+            <img src="{{ asset('images/LOGO PH.png') }}" alt="Logo PH">
         </div>
-    </body>
+
+        <!-- Card Login -->
+        <form action="{{ route('login') }}" method="POST" class="login-card">
+            @csrf
+            <h2>LOGIN</h2>
+            <p>Please Sign In to continue.</p>
+            <img src="{{ asset('images/verified.png') }}" alt="Verified">
+
+            <div class="input-group">
+                <i data-feather="user"></i>
+                <input type="text" placeholder="Username" name="username" required>
+            </div>
+
+            <div class="input-group">
+                <i data-feather="lock"></i>
+                <input type="password" placeholder="Password" name="password" required>
+            </div>
+
+            <button type="submit">LOGIN</button>
+        </form>
+    </div>
+
+    <script>
+        feather.replace();
+    </script>
+</body>
 </html>

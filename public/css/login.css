@@ -9,77 +9,69 @@
 body {
     font-family: 'Poppins', sans-serif;
     background: #FDF0E7;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 /* Wrapper */
 .login-wrapper {
-    position: relative;
-    width: 100%;
-    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100vh;
+    position: relative;
 }
 
-/* Logo kiri atas */
+/* Logo area */
 .logo-area {
     position: absolute;
     top: 20px;
     left: 30px;
     display: flex;
-    align-items: center;
     gap: 15px;
+    align-items: center;
 }
 
 .logo-area img {
-    height: 70px;
+    height: 60px;
     width: auto;
 }
 
-/* Login Image */
-.login-card img {
-    margin-bottom: 20px;
-    justify-content: center;
-    align-items: center;
-}
-
-
-.login-image img {
-    width: 120px;
-    height: auto;
-}
-
-/* Card Login */
+/* Login card */
 .login-card {
     background: #7A0200;
-    background-image: image-set(url('../images/BG Login.png'));
-    padding: 45px 40px;
-    height: 700px;
-    width: 600px;
+    background-image: url('../images/BG Login.png');
+    background-size: cover;
+    padding: 40px;
+    width: 90%;
+    max-width: 500px;
     border-radius: 18px;
     text-align: center;
     color: white;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
     animation: fadeIn 0.6s ease-in-out;
-    flex-direction: column;
-    
 }
 
-/* Judul */
+/* Judul dan teks */
 .login-card h2 {
     font-weight: 600;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     letter-spacing: 1px;
 }
 
 .login-card p {
     font-size: 14px;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     opacity: 0.9;
 }
 
-/* Input Group */
+/* Gambar */
+.login-card img {
+    width: 120px;
+    max-width: 50%;
+    margin-bottom: 20px;
+}
+
+/* Input group */
 .input-group {
     position: relative;
     width: 100%;
@@ -88,40 +80,35 @@ body {
 
 .input-group input {
     width: 100%;
-    padding: 10px 16px;
-    margin: 10px;
+    padding: 12px 16px;
+    padding-left: 45px; /* space for icon */
     font-size: 15px;
     border-radius: 12px;
-    height: 50px;
     border: 2px solid #fff;
-    background: #fff; /* lebih tegas dari transparan */
-    color: rgb(0, 0, 0);
+    background: #fff;
+    color: #000;
     outline: none;
-    transition: all 0.3s ease;
-    padding-left: 50px; /* ruang untuk icon */
+    transition: 0.3s;
+}
+
+.input-group input:focus {
+    box-shadow: 0 0 0 2px white;
 }
 
 .input-group svg {
-    position: absolute;       /* supaya bisa diatur di dalam input */
-    left: 20px;               /* jarak dari kiri input */
-    top: 50%;                 /* vertikal center */
+    position: absolute;
+    left: 15px;
+    top: 50%;
     transform: translateY(-50%);
     width: 20px;
     height: 20px;
-    stroke: rgb(0, 0, 0);   /* ubah warna icon */
-    pointer-events: none;     /* klik tetap ke input */
-}
-
-
-/* Focus Effect */
-.input-group input:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px white;
+    stroke: #000;
+    pointer-events: none;
 }
 
 /* Button */
 button {
-    width: 45%;
+    width: 50%;
     padding: 12px;
     border-radius: 8px;
     border: none;
@@ -130,24 +117,59 @@ button {
     font-weight: 600;
     cursor: pointer;
     transition: 0.3s;
-    margin-top: 6px;
 }
 
-/* Hover Button */
 button:hover {
     background: #f2f2f2;
     transform: translateY(-2px);
 }
 
-/* Animasi masuk */
+/* Animasi fadeIn */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* MEDIA QUERIES */
+
+/* Tablet */
+@media (max-width: 768px) {
+    .login-card {
+        padding: 35px;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+
+    button {
+        width: 60%;
+    }
+
+    .logo-area img {
+        height: 50px;
     }
 }
 
+/* HP */
+@media (max-width: 480px) {
+    .login-card {
+        padding: 25px 20px;
+    }
+
+    .logo-area {
+        flex-direction: column;
+        gap: 10px;
+        top: 10px;
+        left: 10px;
+    }
+
+    button {
+        width: 80%;
+    }
+
+    .login-card img {
+        width: 100px;
+        margin-bottom: 15px;
+    }
+
+    .input-group input {
+        padding-left: 40px;
+    }
+}
