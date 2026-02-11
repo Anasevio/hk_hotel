@@ -11,7 +11,7 @@
        <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
-    <form method="POST" action="{{ route('login') }}">
+    <form action="{{ route('login') }}" method="POST">
         @csrf
         <div class="login-wrapper">
         <div class="logo-area">
