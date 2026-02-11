@@ -1,29 +1,38 @@
-document.getElementById('loginForm').addEventListener('submit', async function(e) {
-    e.preventDefault(); // mencegah submit default
+document
+    .getElementById("loginForm")
+    .addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-    const username = this.username.value;
-    const password = this.password.value;
+        const username = this.username.value;
+        const password = this.password.value;
 
-    try {
-        const response = await fetch('/api/login', { // endpoint API login
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}' // penting untuk Laravel session
-            },
-            body: JSON.stringify({ username, password })
-        });
+        const token = document
+            .querySelector('meta[name="csrf-token"]')
+            .getAttribute("content");
 
-        const data = await response.json();
+        try {
+            const response = await fetch("/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": token,
+                },
+                body: JSON.stringify({ username, password }),
+            });
 
-        if (data.status === 'success') {
-            // redirect sesuai role
-            window.location.href = data.redirect;
-        } else {
-            alert(data.message); // tampilkan error login
+            if (!response.ok) {
+                throw new Error("HTTP error " + response.status);
+            }
+
+            const data = await response.json();
+
+            if (data.status === "success") {
+                window.location.href = data.redirect;
+            } else {
+                alert(data.message);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Terjadi kesalahan pada server.");
         }
-    } catch (err) {
-        console.error(err);
-        alert('Terjadi kesalahan pada server.');
-    }
-});
+    });
