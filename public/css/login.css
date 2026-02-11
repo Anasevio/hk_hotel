@@ -49,10 +49,11 @@ body {
     color: white;
     box-shadow: 0 20px 40px rgba(0,0,0,0.3);
     animation: fadeIn 0.6s ease-in-out;
+    height: 550px;
 }
 
 /* Judul dan teks */
-.login-card h2 {
+.login-card h1 {
     font-weight: 600;
     margin-bottom: 10px;
     letter-spacing: 1px;
@@ -66,8 +67,8 @@ body {
 
 /* Gambar */
 .login-card img {
-    width: 120px;
-    max-width: 50%;
+    width: 260px;
+    max-width: 100%;
     margin-bottom: 20px;
 }
 
@@ -79,7 +80,7 @@ body {
 }
 
 .input-group input {
-    width: 100%;
+    width: 75%;
     padding: 12px 16px;
     padding-left: 45px; /* space for icon */
     font-size: 15px;
@@ -97,7 +98,7 @@ body {
 
 .input-group svg {
     position: absolute;
-    left: 15px;
+    left: 68px;  /* geser ikon sedikit ke kanan */
     top: 50%;
     transform: translateY(-50%);
     width: 20px;
@@ -108,13 +109,13 @@ body {
 
 /* Button */
 button {
-    width: 50%;
+    width: 20%;
     padding: 12px;
     border-radius: 8px;
     border: none;
     background: white;
     color: #7A0200;
-    font-weight: 600;
+    font-weight: 800;
     cursor: pointer;
     transition: 0.3s;
 }
