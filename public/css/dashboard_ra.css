@@ -1,0 +1,90 @@
+body {
+    background: #FDF0E7; /* background utama */
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.dashboard-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.dashboard-header {
+    background: #7A0200; /* warna merah */
+    color: white;
+    padding: 25px 30px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.dashboard-header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.dashboard-header p {
+    margin: 5px 0 0 0;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.btn-logout {
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: white;
+    color: #7A0200;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.dashboard-cards {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.card {
+    background: white;
+    padding: 25px 20px;
+    border-radius: 12px;
+    flex: 1 1 250px;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.card i {
+    font-size: 40px;
+    color: #7A0200;
+    margin-bottom: 15px;
+}
+
+.card h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+}
+
+.card p {
+    font-size: 14px;
+    margin-bottom: 20px;
+    opacity: 0.8;
+}
+
+.btn-card {
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: #7A0200;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn-card:hover {
+    background: #9B0500;
+}
