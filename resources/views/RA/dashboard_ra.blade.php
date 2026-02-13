@@ -9,19 +9,32 @@
     <script src="https://unpkg.com/feather-icons"></script>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dashboard_ra.css') }}">
 </head>
 <body>
 
     <div class="dashboard-wrapper">
 
         <!-- Header -->
+         
+         <div class="logo-area">
+            <img src="{{ asset('images/Logo SIG.png') }}">
+            <img src="{{ asset('images/LOGO PH.png') }}">
+        </div>
+
         <div class="dashboard-header">
             <div>
                 <h1>Selamat Datang, Mahfud</h1>
                 <p>Kelola Aktivitas Sekolahmu Hari Ini.</p>
             </div>
-            <a href="{{ route('logout') }}" class="btn-logout">Logout</a>
+
+           <form method="POST" action="{{ route('logout.web') }}">
+    @csrf
+    <button type="submit" class="btn-logout">Logout</button>
+</form>
+
+
+
         </div>
 
         <!-- Cards -->
@@ -30,7 +43,7 @@
                 <i data-feather="check-square"></i>
                 <h3>Absensi</h3>
                 <p>Catat Kehadiran Secara Online</p>
-                <a href="{{ route('absensi') }}" class="btn-card">Lihat Absensi</a>
+                <a href="{{ route('ra.absensi') }}" class="btn-card">Lihat Absensi</a>
             </div>
 
             <div class="card">

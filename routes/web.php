@@ -18,9 +18,13 @@ Route::get('/', function () {
     return view('auth.login');
 })->name('login');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+use App\Http\Controllers\RA\DashboardController;
+
+Route::middleware(['auth'])->prefix('ra')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('ra.dashboard');
+});
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -29,3 +33,33 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::get('/absensi', function () {
+    return 'Halaman Absensi';
+})->name('absensi');
+
+Route::get('/room', function () {
+    return 'Halaman Room';
+})->name('room');
+
+Route::get('/riwayat', function () {
+    return 'Halaman Riwayat';
+})->name('riwayat');
+
+use Illuminate\Support\Facades\Auth;
+
+Route::post('/logout-web', function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+
+    return redirect('/')->with('success', 'Berhasil logout');
+})->name('logout.web');
+
+use App\Http\Controllers\RA\AbsensiController;
+
+Route::middleware(['auth'])->prefix('ra')->group(function () {
+    Route::get('/absensi', [AbsensiController::class, 'index'])
+        ->name('ra.absensi');
+});
+

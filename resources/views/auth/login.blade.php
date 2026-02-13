@@ -12,6 +12,13 @@
        <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
+
+    @if(session('success'))
+    <div class="alert-success">
+        {{ session('success') }}
+    </div>
+    @endif
+
     <form id="loginForm">
         @csrf
         <div class="login-wrapper">
@@ -19,6 +26,17 @@
             <img src="{{ asset('images/Logo SIG.png') }}">
             <img src="{{ asset('images/LOGO PH.png') }}">
         </div>
+
+    @if(session('success'))
+<script>
+    setTimeout(function() {
+        const alertBox = document.querySelector('.alert-success');
+        if (alertBox) {
+            alertBox.style.display = 'none';
+        }
+    }, 3000);
+</script>
+@endif
 
 
         <div class="login-card">
