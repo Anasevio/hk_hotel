@@ -1,23 +1,22 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Absensi</title>
-    <link rel="stylesheet" href="{{ asset('css/absensi_ra.css') }}">
-</head>
-<body>
+@extends('layouts.app')
 
-        <div class="logo-area">
-            <img src="{{ asset('images/Logo SIG.png') }}">
-            <img src="{{ asset('images/LOGO PH.png') }}">
-        </div>
-        
+@section('title', 'Absensi')
+
+@section('content')
+
+<link rel="stylesheet" href="{{ asset('css/absensi_ra.css') }}">
+
+<div class="logo-area">
+    <img src="{{ asset('images/Logo SIG.png') }}">
+    <img src="{{ asset('images/LOGO PH.png') }}">
+</div>
+
 <div class="container">
 
     <!-- HEADER -->
     <div class="header">
         <h1>Absensi</h1>
-        <p>Rabu, 4 Februari 2026</p>
+        <p>{{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}</p>
     </div>
 
     <div class="content">
@@ -28,45 +27,60 @@
             <!-- STATUS -->
             <div class="card">
                 <h3>Status Hari Ini</h3>
-                <p class="date">Rabu, 14 Januari 2026</p>
+                <p class="date">{{ \Carbon\Carbon::today()->translatedFormat('l, d F Y') }}</p>
 
-                <p><strong>Nama Petugas</strong><br>Mahfud</p>
-                <p><strong>Waktu Masuk</strong><br>07:19</p>
+                <p>
+                    <strong>Nama Petugas</strong><br>
+                    {{ auth()->user()->name }}
+                </p>
 
                 <hr>
 
-                <h4>Detail Absensi</h4>
+                <!-- FORM ABSENSI -->
+                <form action="{{ route('ra.absensi.store') }}" method="POST">
+                    @csrf
+
+                    <input type="hidden" name="status" id="statusInput">
+
+                    <h4>Detail Absensi</h4>
                 <div class="status-btn">
-                    <button class="btn hadir">Hadir</button>
-                    <button class="btn izin">Izin</button>
-                    <button class="btn sakit">Sakit</button>
+                    <button type="button" class="btn hadir" onclick="pilihStatus(this, 'hadir')">Hadir</button>
+                    <button type="button" class="btn izin" onclick="pilihStatus(this, 'izin')">Izin</button>
+                    <button type="button" class="btn sakit" onclick="pilihStatus(this, 'sakit')">Sakit</button>
                 </div>
 
-                <textarea placeholder="Catatan tambahan (opsional)"></textarea>
-                <button class="send">➤</button>
+
+                    <textarea name="catatan" placeholder="Catatan tambahan (opsional)"></textarea>
+
+                    <button type="submit" class="send"><i data-feather="arrow-right"></i></button>
+                </form>
+
+                @if (session('success'))
+                    <p style="color: green">{{ session('success') }}</p>
+                @endif
+
+                @if (session('error'))
+                    <p style="color: red">{{ session('error') }}</p>
+                @endif
             </div>
 
             <!-- SUMMARY -->
             <div class="summary">
                 <div class="box">
-                    <span>✔</span>
                     <p>Hadir</p>
-                    <strong>1</strong>
+                    <strong>{{ $rekap['hadir'] ?? 0 }}</strong>
                 </div>
                 <div class="box">
-                    <span>✖</span>
                     <p>Izin</p>
-                    <strong>10000</strong>
+                    <strong>{{ $rekap['izin'] ?? 0 }}</strong>
                 </div>
                 <div class="box">
-                    <span>☺</span>
                     <p>Sakit</p>
-                    <strong>10000</strong>
+                    <strong>{{ $rekap['sakit'] ?? 0 }}</strong>
                 </div>
                 <div class="box">
-                    <span>☹</span>
                     <p>Alpha</p>
-                    <strong>10000</strong>
+                    <strong>{{ $rekap['alpha'] ?? 0 }}</strong>
                 </div>
             </div>
 
@@ -77,36 +91,62 @@
 
             <!-- PROFILE -->
             <div class="profile card">
-                <img src="https://i.imgur.com/0y0y0y0.png" alt="avatar">
+                <img src="https://i.imgur.com/0y0y0y0.png">
                 <div>
-                    <h4>Mahfud Anjayy</h4>
-                    <small>Bagian IT</small>
-                </div>
-                <div class="stats">
-                    <span>Hadir<br><b>28</b></span>
-                    <span>Izin<br><b>8</b></span>
-                    <span>Sakit<br><b>3</b></span>
-                    <span>Alpha<br><b class="red">50</b></span>
+                    <h4>{{ auth()->user()->name }}</h4>
+                    <small>{{ auth()->user()->role }}</small>
                 </div>
             </div>
 
             <!-- RIWAYAT -->
             <h3 class="riwayat-title">Riwayat Absensi</h3>
 
-            <div class="riwayat-card hadir-bg">
-                <p>Kamis, 14 Desember 2023 - 15:59</p>
-                <button>→ Absen Masuk</button>
-            </div>
-
-            <div class="riwayat-card izin-bg">
-                <p>Kamis, 14 Desember 2023 - 16:54</p>
-                <button>← Izin</button>
-            </div>
+            @forelse ($riwayat ?? [] as $absen)
+                <div class="riwayat-card {{ $absen->status }}-bg">
+                    <p>
+                        {{ \Carbon\Carbon::parse($absen->tanggal)->translatedFormat('l, d F Y') }}
+                        @if ($absen->jam_masuk)
+                            - {{ $absen->jam_masuk }}
+                        @endif
+                    </p>
+                    <button>{{ strtoupper($absen->status) }}</button>
+                </div>
+            @empty
+                <p>Tidak ada riwayat absensi</p>
+            @endforelse
 
         </div>
 
     </div>
 </div>
 
-</body>
-</html>
+<script>
+function setStatus(value) {
+    document.getElementById('statusInput').value = value;
+}
+</script>
+    <script>
+      feather.replace();
+    </script>
+
+<script>
+function pilihStatus(button, value) {
+
+    // set value ke input hidden
+    document.getElementById('statusInput').value = value;
+
+    // ambil semua tombol dalam status-btn
+    const buttons = document.querySelectorAll('.status-btn .btn');
+
+    // hapus active dari semua
+    buttons.forEach(function(btn) {
+        btn.classList.remove('active');
+    });
+
+    // aktifkan yang diklik saja
+    button.classList.add('active');
+}
+</script>
+
+
+    @endsection

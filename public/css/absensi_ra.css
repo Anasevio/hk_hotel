@@ -1,14 +1,3 @@
-* {
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-}
-
-body {
-    background: #FDF0E7;
-    margin: 0;
-    padding: 40px 0;
-}
-
 /* Logo area */
 .logo-area {
     position: absolute;
@@ -72,6 +61,11 @@ body {
     margin: 10px 0;
 }
 
+.status-btn .active {
+    background: #7b0000;
+    color: white;
+}
+
 .btn {
     border: none;
     padding: 6px 12px;
@@ -79,8 +73,8 @@ body {
     cursor: pointer;
 }
 
-.hadir { background: #7b0000; color: white; }
-.izin { background: #f5a623; color: white; }
+.hadir { background: #ccc;}
+.izin { background: #ccc;}
 .sakit { background: #ccc; }
 
 textarea {
@@ -95,7 +89,7 @@ textarea {
     background: #7b0000;
     color: white;
     border: none;
-    padding: 8px 14px;
+    padding: 8px 10px;
     border-radius: 50%;
     margin-top: 8px;
     cursor: pointer;
@@ -144,6 +138,7 @@ textarea {
     border-radius: 10px;
     color: white;
     margin-bottom: 10px;
+    background: #7b0000;
 }
 
 .hadir-bg {

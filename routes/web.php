@@ -58,8 +58,12 @@ Route::post('/logout-web', function () {
 
 use App\Http\Controllers\RA\AbsensiController;
 
-Route::middleware(['auth'])->prefix('ra')->group(function () {
+Route::middleware(['auth'])->prefix('ra')->name('ra.')->group(function () {
+    
     Route::get('/absensi', [AbsensiController::class, 'index'])
-        ->name('ra.absensi');
+        ->name('absensi');
+
+    Route::post('/absensi', [AbsensiController::class, 'store'])
+        ->name('absensi.store');
 });
 
