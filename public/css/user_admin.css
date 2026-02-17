@@ -1,0 +1,74 @@
+/* Styles specific to Admin -> User management page
+   Keeps look consistent with dashboard_admin.css but adds table/header/modal styles
+*/
+
+.user-table-wrapper { overflow: auto; border: 1px solid rgba(0,0,0,0.06); border-radius: 14px; background: #fff; }
+.user-table { width: 100%; border-collapse: collapse; min-width: 740px; }
+.user-table thead th { background: #e9e3df; padding: 14px; text-align: left; font-weight:700; color:#666; font-size:14px; }
+.user-table tbody td { padding: 18px 14px; border-top: 1px solid #f0eaea; vertical-align: middle; }
+.user-table .td-name { font-size:18px; font-weight:600; }
+.user-table .td-status { color:#6b6b6b; font-size:13px; }
+.user-table .td-ket { color:#8a8a8a; font-size:13px; }
+.user-table .td-action { text-align: right; }
+
+/* edit button style that matches screenshot */
+.btn-edit {
+    background: #7A0200;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 12px;
+    border: 0;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.08);
+    font-weight:600;
+}
+
+/* Modal styles (improved) */
+.modal { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 120; }
+.modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.35); transition: opacity 200ms ease; }
+/* center modal-panel absolutely so it's always centered even if parent has transforms */
+.modal-panel {
+    position: fixed; /* ensure centered relative to viewport */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(180deg, #ffffff 0%, #fbfbfb 100%);
+    padding: 20px;
+    border-radius: 14px;
+    width: 94%;
+    max-width: 520px;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.35);
+    z-index: 130;
+    border: 1px solid rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+}
+.modal-header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:12px; }
+.modal-header h4 { margin:0; font-size:16px; }
+.modal-sub { font-size:12px; color:#777; margin-top:4px; }
+.modal-close { background: transparent; border: 0; font-size:18px; line-height:1; padding:6px 8px; border-radius:8px; cursor:pointer; color:#666; }
+.modal-body { padding: 6px 0 0 0; flex:1; }
+.modal-footer { display:flex; gap:10px; justify-content:flex-end; margin-top:18px; }
+.form-row { display:flex; flex-direction:column; gap:8px; margin-bottom:6px; }
+.form-row label { font-size:13px; color:#555; }
+.form-row select { padding:12px 14px; border-radius:10px; border:1px solid #e6e0dd; font-size:14px; background:#fff; min-width:220px; }
+.btn-secondary { background: transparent; border: 1px solid #ddd; color:#333; padding:8px 14px; border-radius:8px; }
+.btn-primary { background: linear-gradient(180deg,#7A0200,#500000); color:#fff; border:0; padding:9px 16px; border-radius:10px; box-shadow: 0 6px 18px rgba(122,2,0,0.18); font-weight:700; }
+
+/* Small-screen tweaks */
+@media (max-width: 520px) {
+    .modal-panel { max-width: 92%; padding:16px; }
+    .form-row select { min-width:0; width:100%; }
+}
+
+/* Make edit button match modal weight */
+.btn-edit { background: #7A0200; color: #fff; padding: 8px 16px; border-radius: 12px; border: 0; box-shadow: 0 6px 0 rgba(0,0,0,0.06); font-weight:600; transition: transform 0.12s ease; }
+.btn-edit:active { transform: translateY(1px); }
+
+/* Ensure sidebar styles are preserved on this page */
+.sidebar nav a.active { background: rgba(255,255,255,0.2); font-weight:700; }
+
+@media (max-width: 640px) {
+    .user-table { min-width: 520px; }
+    .td-name { font-size:16px; }
+    .panel-head h3 { font-size:18px; }
+}

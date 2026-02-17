@@ -1,53 +1,96 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RA\DashboardController;
+use App\Http\Controllers\RA\AbsensiController;
+use App\Http\Controllers\AdminDashboardController;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
 */
 
 Route::get('/', function () {
     return view('auth.login');
 })->name('login');
 
-use App\Http\Controllers\RA\DashboardController;
+require __DIR__.'/auth.php';
 
-Route::middleware(['auth'])->prefix('ra')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])
-        ->name('ra.dashboard');
-});
-
-
+/*
+|--------------------------------------------------------------------------
+| PROFILE (auth)
+|--------------------------------------------------------------------------
+*/
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+/*
+|--------------------------------------------------------------------------
+| RA ROUTES
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->prefix('ra')->name('ra.')->group(function () {
 
-Route::get('/absensi', function () {
-    return 'Halaman Absensi';
-})->name('absensi');
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
 
-Route::get('/room', function () {
-    return 'Halaman Room';
-})->name('room');
+    Route::get('/absensi', [AbsensiController::class, 'index'])
+        ->name('absensi');
 
-Route::get('/riwayat', function () {
-    return 'Halaman Riwayat';
-})->name('riwayat');
+    Route::post('/absensi', [AbsensiController::class, 'store'])
+        ->name('absensi.store');
 
-use Illuminate\Support\Facades\Auth;
+    Route::get('/room', function () {
+        return view('RA.room');
+    })->name('room');
 
+    Route::get('/riwayat', function () {
+        return view('RA.riwayat');
+    })->name('riwayat');
+});
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN ROUTES
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard_admin');
+    })->name('dashboard');
+
+    Route::get('/history', function () {
+        return view('admin.history_admin');
+    })->name('history');
+
+    Route::get('/users', [AdminDashboardController::class, 'users'])
+        ->name('users');
+
+    Route::post('/user/{user}/role', [AdminDashboardController::class, 'updateUserRole'])
+        ->name('user.updateRole');
+
+    Route::get('/tugas', function () {
+        return view('admin.tugas_admin', [
+            'selectedUser' => \App\Models\User::find(request('user'))
+        ]);
+    })->name('tugas');
+
+    Route::post('/tugas', [AdminDashboardController::class, 'storeTugas'])
+        ->name('tugas.store');
+});
+
+/*
+|--------------------------------------------------------------------------
+| LOGOUT CUSTOM
+|--------------------------------------------------------------------------
+*/
 Route::post('/logout-web', function () {
     Auth::logout();
     request()->session()->invalidate();
@@ -55,15 +98,3 @@ Route::post('/logout-web', function () {
 
     return redirect('/')->with('success', 'Berhasil logout');
 })->name('logout.web');
-
-use App\Http\Controllers\RA\AbsensiController;
-
-Route::middleware(['auth'])->prefix('ra')->name('ra.')->group(function () {
-    
-    Route::get('/absensi', [AbsensiController::class, 'index'])
-        ->name('absensi');
-
-    Route::post('/absensi', [AbsensiController::class, 'store'])
-        ->name('absensi.store');
-});
-

@@ -27,6 +27,7 @@
                 <h1>Selamat Datang, Mahfud</h1>
                 <p>Kelola Aktivitas Sekolahmu Hari Ini.</p>
             </div>
+<<<<<<< HEAD
 
            <form method="POST" action="{{ route('logout.web') }}">
     @csrf
@@ -35,6 +36,12 @@
 
 
 
+=======
+            <form method="POST" action="{{ route('logout') }}" style="display:inline">
+                @csrf
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+>>>>>>> 5f73531 (halaman admin)
         </div>
 
         <!-- Cards -->
