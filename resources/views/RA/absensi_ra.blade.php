@@ -4,7 +4,7 @@
 
 @section('content')
 
-<link rel="stylesheet" href="{{ asset('css/absensi_ra.css') }}">
+<link rel="stylesheet" href="{{ asset('css/ra/absensi_ra.css') }}">
 
 <div class="logo-area">
     <img src="{{ asset('images/Logo SIG.png') }}">

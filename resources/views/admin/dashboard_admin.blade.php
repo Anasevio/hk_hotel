@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="{{ asset('css/dashboard_admin.css') }}">
+    <!-- icon -->
+    <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
     <header class="topbar">
@@ -42,7 +44,10 @@
                 <a href="{{ route('admin.users') }}">User</a>
                 <a href="{{ route('admin.history') }}">History</a>
             </nav>
-            <div class="logout">🔒 Logout</div>
+            <button class="logout">
+                <i data-feather="log-out"></i>
+                Logout
+            </button>
         </aside>
 
         <div class="main-area">
@@ -222,6 +227,9 @@
             })();
         })();
     </script>
-
+    <!-- icon -->
+    <script>
+      feather.replace();
+    </script>
     </body>
 </html>

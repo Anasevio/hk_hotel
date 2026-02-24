@@ -39,7 +39,7 @@ class AuthController extends Controller
             ],
             'redirect' => match ($user->role) {
                 // adjust to existing route path for admin
-                'admin' => '/dashboard-admin',
+                'admin' => '/admin/dashboard',
                 'ra' => '/ra/dashboard',
                 'supervisor' => '/supervisor/dashboard',
                 'manager' => '/manager/dashboard',

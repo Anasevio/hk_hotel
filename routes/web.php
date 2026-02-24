@@ -62,9 +62,8 @@ Route::middleware(['auth'])->prefix('ra')->name('ra.')->group(function () {
 */
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
 
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard_admin');
-    })->name('dashboard');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+    ->name('dashboard');
 
     Route::get('/history', function () {
         return view('admin.history_admin');

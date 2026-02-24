@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/feather-icons"></script>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="{{ asset('css/dashboard_ra.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/ra/dashboard_ra.css') }}">
 </head>
 <body>
 
@@ -27,7 +27,6 @@
                 <h1>Selamat Datang, Mahfud</h1>
                 <p>Kelola Aktivitas Sekolahmu Hari Ini.</p>
             </div>
-<<<<<<< HEAD
 
            <form method="POST" action="{{ route('logout.web') }}">
     @csrf
@@ -36,12 +35,6 @@
 
 
 
-=======
-            <form method="POST" action="{{ route('logout') }}" style="display:inline">
-                @csrf
-                <button type="submit" class="btn-logout">Logout</button>
-            </form>
->>>>>>> 5f73531 (halaman admin)
         </div>
 
         <!-- Cards -->
@@ -57,14 +50,14 @@
                 <i data-feather="clipboard"></i>
                 <h3>Room</h3>
                 <p>Lihat dan Kumpulkan Tugas</p>
-                <a href="{{ route('room') }}" class="btn-card">Lihat Kamar</a>
+                <a href="#" class="btn-card">Lihat Kamar</a>
             </div>
 
             <div class="card">
                 <i data-feather="bell"></i>
                 <h3>Riwayat</h3>
                 <p>Riwayat Tugas</p>
-                <a href="{{ route('riwayat') }}" class="btn-card">Lihat Aspirasi</a>
+                <a href="#" class="btn-card">Lihat Aspirasi</a>
             </div>
         </div>
     </div>

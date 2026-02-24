@@ -55,7 +55,7 @@ class AbsensiController extends Controller
             'tanggal' => $today,
             'status' => $request->status,
             'catatan' => $request->catatan,
-            'jam_masuk' => $request->status === 'hadir' ? now()->format('H:i:s') : null,
+            'jam_masuk' => now()->format('H:i:s'),
         ]);
 
         return back()->with('success', 'Absensi berhasil.');
