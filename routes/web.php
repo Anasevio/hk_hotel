@@ -1,99 +1,89 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\RA\DashboardController;
-use App\Http\Controllers\RA\AbsensiController;
-use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\AttendanceController as AdminAttendance;
+use App\Http\Controllers\Admin\TimerSettingController;
+use App\Http\Controllers\Supervisor\DashboardController as SupervisorDashboard;
+use App\Http\Controllers\Supervisor\TaskController as SupervisorTask;
+use App\Http\Controllers\Supervisor\SpecialCaseController;
+use App\Http\Controllers\Manager\DashboardController as ManagerDashboard;
+use App\Http\Controllers\Manager\InspectionController;
+use App\Http\Controllers\Ra\DashboardController as RaDashboard;
+use App\Http\Controllers\Ra\TaskController as RaTask;
+use App\Http\Controllers\Ra\AttendanceController as RaAttendance;
+use App\Http\Controllers\Shared\RoomController;
+use App\Http\Controllers\Shared\HistoryController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-*/
+// Root → login
+Route::get('/', fn() => redirect()->route('login'));
 
-Route::get('/', function () {
-    return view('auth.login');
-})->name('login');
+// ── AUTH ──────────────────────────────────────────────────────────
+Route::get('/login',  [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::post('/logout',[AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
-require __DIR__.'/auth.php';
-
-/*
-|--------------------------------------------------------------------------
-| PROFILE (auth)
-|--------------------------------------------------------------------------
-*/
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// ── ADMIN ─────────────────────────────────────────────────────────
+Route::prefix('admin')->name('admin.')->middleware(['auth','role:admin'])->group(function () {
+    Route::get('/dashboard',             [AdminDashboard::class,       'index'])->name('dashboard');
+    Route::get('/users',                 [UserController::class,       'index'])->name('users.index');
+    Route::post('/users',                [UserController::class,       'store'])->name('users.store');
+    Route::put('/users/{user}',          [UserController::class,       'update'])->name('users.update');
+    Route::delete('/users/{user}',       [UserController::class,       'destroy'])->name('users.destroy');
+    Route::patch('/users/{user}/toggle', [UserController::class,       'toggleActive'])->name('users.toggle');
+    Route::get('/attendance',            [AdminAttendance::class,      'index'])->name('attendance.index');
+    Route::get('/attendance/export',     [AdminAttendance::class,      'export'])->name('attendance.export');
+    Route::get('/timer',                 [TimerSettingController::class,'index'])->name('timer.index');
+    Route::put('/timer/{key}',           [TimerSettingController::class,'update'])->name('timer.update');
+    Route::get('/rooms',                 [RoomController::class,       'index'])->name('rooms.index');
+    Route::put('/rooms/{room}/status',   [RoomController::class,       'updateStatus'])->name('rooms.status');
+    Route::get('/rooms/logs',            [RoomController::class,       'logs'])->name('rooms.logs');
+    Route::get('/history',               [HistoryController::class,    'index'])->name('history.index');
 });
 
-/*
-|--------------------------------------------------------------------------
-| RA ROUTES
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth'])->prefix('ra')->name('ra.')->group(function () {
-
-    Route::get('/dashboard', [DashboardController::class, 'index'])
-        ->name('dashboard');
-
-    Route::get('/absensi', [AbsensiController::class, 'index'])
-        ->name('absensi');
-
-    Route::post('/absensi', [AbsensiController::class, 'store'])
-        ->name('absensi.store');
-
-    Route::get('/room', function () {
-        return view('RA.room');
-    })->name('room');
-
-    Route::get('/riwayat', function () {
-        return view('RA.riwayat');
-    })->name('riwayat');
+// ── SUPERVISOR ────────────────────────────────────────────────────
+Route::prefix('supervisor')->name('supervisor.')->middleware(['auth','role:supervisor'])->group(function () {
+    Route::get('/dashboard',                   [SupervisorDashboard::class, 'index'])->name('dashboard');
+    Route::get('/tasks',                       [SupervisorTask::class,      'index'])->name('tasks.index');
+    Route::post('/tasks',                      [SupervisorTask::class,      'store'])->name('tasks.store');
+    Route::get('/tasks/{task}',                [SupervisorTask::class,      'show'])->name('tasks.show');
+    Route::post('/tasks/{task}/approve',       [SupervisorTask::class,      'approve'])->name('tasks.approve');
+    Route::post('/tasks/{task}/return',        [SupervisorTask::class,      'returnToRa'])->name('tasks.return');
+    Route::get('/rooms',                       [RoomController::class,      'index'])->name('rooms.index');
+    Route::put('/rooms/{room}/status',         [RoomController::class,      'updateStatus'])->name('rooms.status');
+    Route::get('/special-cases',              [SpecialCaseController::class,'index'])->name('special-cases.index');
+    Route::post('/special-cases',             [SpecialCaseController::class,'store'])->name('special-cases.store');
+    Route::put('/special-cases/{case}',        [SpecialCaseController::class,'update'])->name('special-cases.update');
+    Route::post('/special-cases/{case}/resolve',[SpecialCaseController::class,'resolve'])->name('special-cases.resolve');
+    Route::get('/attendance',                  [AdminAttendance::class,     'index'])->name('attendance.index');
+    Route::get('/history',                     [HistoryController::class,   'index'])->name('history.index');
 });
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN ROUTES
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])
-    ->name('dashboard');
-
-    Route::get('/history', function () {
-        return view('admin.history_admin');
-    })->name('history');
-
-    Route::get('/users', [AdminDashboardController::class, 'users'])
-        ->name('users');
-
-    Route::post('/user/{user}/role', [AdminDashboardController::class, 'updateUserRole'])
-        ->name('user.updateRole');
-
-    Route::get('/tugas', function () {
-        return view('admin.tugas_admin', [
-            'selectedUser' => \App\Models\User::find(request('user'))
-        ]);
-    })->name('tugas');
-
-    Route::post('/tugas', [AdminDashboardController::class, 'storeTugas'])
-        ->name('tugas.store');
+// ── MANAGER ───────────────────────────────────────────────────────
+Route::prefix('manager')->name('manager.')->middleware(['auth','role:manager'])->group(function () {
+    Route::get('/dashboard',                   [ManagerDashboard::class,  'index'])->name('dashboard');
+    Route::get('/inspections',                 [InspectionController::class,'index'])->name('inspections.index');
+    Route::get('/inspections/{task}',          [InspectionController::class,'show'])->name('inspections.show');
+    Route::post('/inspections/{task}/approve', [InspectionController::class,'approve'])->name('inspections.approve');
+    Route::post('/inspections/{task}/return',  [InspectionController::class,'returnToSupervisor'])->name('inspections.return');
+    Route::get('/rooms',                       [RoomController::class,    'index'])->name('rooms.index');
+    Route::get('/attendance',                  [AdminAttendance::class,   'index'])->name('attendance.index');
+    Route::get('/history',                     [HistoryController::class, 'index'])->name('history.index');
 });
 
-/*
-|--------------------------------------------------------------------------
-| LOGOUT CUSTOM
-|--------------------------------------------------------------------------
-*/
-Route::post('/logout-web', function () {
-    Auth::logout();
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
-
-    return redirect('/')->with('success', 'Berhasil logout');
-})->name('logout.web');
+// ── ROOM ATTENDANT ────────────────────────────────────────────────
+Route::prefix('ra')->name('ra.')->middleware(['auth','role:ra'])->group(function () {
+    Route::get('/dashboard',              [RaDashboard::class,  'index'])->name('dashboard');
+    Route::get('/attendance',             [RaAttendance::class, 'index'])->name('attendance.index');
+    Route::post('/attendance/check-in',   [RaAttendance::class, 'checkIn'])->name('attendance.checkin');
+    Route::post('/attendance/check-out',  [RaAttendance::class, 'checkOut'])->name('attendance.checkout');
+    Route::get('/rooms',                  [RoomController::class,'raIndex'])->name('rooms.index');
+    Route::get('/rooms/{room}',           [RoomController::class,'raShow'])->name('rooms.show');
+    Route::get('/tasks/{task}',           [RaTask::class,        'show'])->name('tasks.show');
+    Route::post('/tasks/{task}/start',    [RaTask::class,        'start'])->name('tasks.start');
+    Route::post('/tasks/{task}/checklist',[RaTask::class,        'updateChecklist'])->name('tasks.checklist');
+    Route::post('/tasks/{task}/submit',   [RaTask::class,        'submit'])->name('tasks.submit');
+    Route::get('/history',                [HistoryController::class,'index'])->name('history.index');
+});

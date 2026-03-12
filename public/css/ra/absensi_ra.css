@@ -1,159 +1,107 @@
-/* Logo area */
-.logo-area {
-    position: absolute;
-    top: 20px;
-    left: 30px;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: "Poppins", sans-serif;
+    background: var(--bg-warm);
+    min-height: 100vh;
+}
+
+:root {
+    --primary-pink: #c2718f; /* Lebih gelap & rich */
+    --primary-dark: #a85578; /* Untuk hover & gradient */
+    --secondary-pink: #edbbca; /* Lebih terlihat */
+    --light-pink: #faeaee; /* Subtle bg */
+    --bg-main: #faf9f6;
+    --bg-warm: #f7e9d7;
+    --divider: #ddd0c8; /* Lebih kontras */
+    --text-main: #3a3a3a; /* Lebih gelap */
+    --text-muted: #8c8c8c;
+    --accent-gold: #b89d7e;
+    --white: #ffffff;
+    --success: #7fb87a; /* Sage green lebih tegas */
+}
+
+/* ── ABSENSI CARDS ── */
+.abs-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+}
+.abs-box {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--divider);
+}
+.abs-icon {
+    font-size: 24px;
+    margin-bottom: 6px;
+}
+.abs-val {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-main);
+}
+.abs-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* ── RIWAYAT ABSEN ── */
+.riwayat-item {
     display: flex;
-    gap: 15px;
     align-items: center;
-}
-
-.logo-area img {
-    height: 60px;
-    width: auto;
-}
-
-.container {
-    max-width: 1200px;
-    background: #f7e9dc;
-    margin: auto;
-    padding: 30px;
-    border-radius: 12px;
-}
-
-.header {
-    background: #7b0000;
-    color: white;
-    padding: 20px;
-    text-align: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--primary-pink);
     border-radius: 10px;
+    margin-bottom: 8px;
+    color: #fff;
 }
-
-.content {
+.riwayat-icon {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
     display: flex;
-    gap: 20px;
-    margin-top: 20px;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
 }
-
-.left {
-    flex: 2;
-}
-
-.right {
+.riwayat-info {
     flex: 1;
 }
-
-.card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
+.riwayat-date {
+    font-size: 11px;
+    opacity: 0.8;
 }
-
-.date {
-    color: gray;
-    font-size: 14px;
+.riwayat-label {
+    font-size: 13px;
+    font-weight: 600;
 }
-
-.status-btn {
-    display: flex;
-    gap: 10px;
-    margin: 10px 0;
+.riwayat-badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
 }
-
-.status-btn .active {
-    background: #7b0000;
-    color: white;
+.rb-masuk {
+    background: var(--white);
+    color: var(--primary-pink);
 }
-
-.btn {
-    border: none;
-    padding: 6px 12px;
-    border-radius: 8px;
-    cursor: pointer;
+.rb-izin {
+    background: var(--accent-gold);
+    color: #fff;
 }
-
-.hadir { background: #ccc;}
-.izin { background: #ccc;}
-.sakit { background: #ccc; }
-
-textarea {
-    width: 100%;
-    height: 60px;
-    margin-top: 10px;
-    border-radius: 8px;
-    padding: 8px;
-}
-
-.send {
-    background: #7b0000;
-    color: white;
-    border: none;
-    padding: 8px 10px;
-    border-radius: 50%;
-    margin-top: 8px;
-    cursor: pointer;
-}
-
-.summary {
-    display: flex;
-    gap: 10px;
-}
-
-.box {
-    background: white;
-    flex: 1;
-    padding: 15px;
-    border-radius: 12px;
-    text-align: center;
-}
-
-.profile {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.profile img {
-    width: 50px;
-    border-radius: 50%;
-}
-
-.stats {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-}
-
-.red {
-    color: red;
-}
-
-.riwayat-title {
-    margin: 10px 0;
-}
-
-.riwayat-card {
-    padding: 15px;
-    border-radius: 10px;
-    color: white;
-    margin-bottom: 10px;
-    background: #7b0000;
-}
-
-.hadir-bg {
-    background: #7b0000;
-}
-
-.izin-bg {
-    background: #a04000;
-}
-
-.riwayat-card button {
-    background: #f5a623;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 8px;
-    color: white;
-    cursor: pointer;
+.rb-sakit {
+    background: #1e88e5;
+    color: #fff;
 }
