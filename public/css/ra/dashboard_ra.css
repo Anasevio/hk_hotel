@@ -5,7 +5,7 @@
 }
 body {
     font-family: "Poppins", sans-serif;
-    background: url('../images/bg_pattern.jpg') no-repeat center center fixed;
+    background: var(--bg-warm);
     min-height: 100vh;
 }
 

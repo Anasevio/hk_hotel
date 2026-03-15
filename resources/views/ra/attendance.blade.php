@@ -152,7 +152,7 @@ function pilihStatus(status, el) {
         (status === 'izin' || status === 'sakit') ? 'block' : 'none';
     const btn = document.getElementById('btnSubmit');
     btn.disabled = false;
-    btn.style.background = '#7A0200';
+    btn.style.background = '#c2718f';
     btn.style.color = '#fff';
     btn.style.cursor = 'pointer';
     btn.textContent = 'Absen Sekarang';

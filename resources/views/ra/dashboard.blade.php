@@ -6,7 +6,7 @@
 <div class="welcome-card">
     <div class="welcome-text">
         <div class="greeting">Selamat Datang, {{ auth()->user()->name }}</div>
-        <div class="subtext">Kelas Aktivitas Sekolahmu Hari Ini · {{ now()->translatedFormat('l, d F Y') }}</div>
+        <div class="subtext">Kelola pekerjaan hari ini · {{ now()->translatedFormat('l, d F Y') }}</div>
     </div>
     <form method="POST" action="{{ route('logout') }}">
         @csrf
@@ -32,9 +32,9 @@
     </a>
     <a href="{{ route('ra.rooms.index') }}" class="menu-card">
         <div class="menu-icon">🛏️</div>
-        <div class="menu-title">Room</div>
+        <div class="menu-title">Tugas</div>
         <div class="menu-desc">Lihat dan Kumpulkan Tugas</div>
-        <span class="menu-link">Lihat Kamar ›</span>
+        <span class="menu-link">Lihat Tugas ›</span>
     </a>
     <a href="{{ route('ra.history.index') }}" class="menu-card">
         <div class="menu-icon">📢</div>

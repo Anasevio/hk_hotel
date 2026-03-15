@@ -1,5 +1,31 @@
 <?php
+
 namespace App\Http\Controllers\Supervisor;
+
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-class DashboardController extends Controller { public function index() { return view('admin.coming-soon', ['page' => 'DashboardController']); } public function store(Request $r){} public function show($id){} public function approve($id){} public function returnToRa($id){} public function update(Request $r, $id){} public function resolve($id){} }
+use App\Models\{Room, Task};
+
+class DashboardController extends Controller
+{
+    public function index()
+    {
+        $user = auth()->user();
+
+        $myRooms = Room::where('assigned_to', $user->id)->get();
+
+        $activeTask = Task::where('assigned_to', $user->id)
+            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->with('room')
+            ->latest()
+            ->first();
+
+        $completedToday = Task::where('assigned_to', $user->id)
+            ->where('status', 'completed')
+            ->whereDate('updated_at', today())
+            ->count();
+
+        $todayAtt = $user->todayAttendance;
+
+        return view('supervisor.dashboard', compact('myRooms', 'activeTask', 'completedToday', 'todayAtt'));
+    }
+}

@@ -6,7 +6,10 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendance;
 use App\Http\Controllers\Admin\TimerSettingController;
+use App\Http\Controllers\Admin\TaskController as AdminTask;
 use App\Http\Controllers\Supervisor\DashboardController as SupervisorDashboard;
+use App\Http\Controllers\Supervisor\AttendanceController as SupervisorAttendance;
+use App\Http\Controllers\Supervisor\HistoryController as HistoryController;
 use App\Http\Controllers\Supervisor\TaskController as SupervisorTask;
 use App\Http\Controllers\Supervisor\SpecialCaseController;
 use App\Http\Controllers\Manager\DashboardController as ManagerDashboard;
@@ -15,7 +18,6 @@ use App\Http\Controllers\Ra\DashboardController as RaDashboard;
 use App\Http\Controllers\Ra\TaskController as RaTask;
 use App\Http\Controllers\Ra\AttendanceController as RaAttendance;
 use App\Http\Controllers\Shared\RoomController;
-use App\Http\Controllers\Shared\HistoryController;
 
 // Root → login
 Route::get('/', fn() => redirect()->route('login'));
@@ -31,6 +33,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth','role:admin'])->group
     Route::get('/users',                 [UserController::class,       'index'])->name('users.index');
     Route::post('/users',                [UserController::class,       'store'])->name('users.store');
     Route::put('/users/{user}',          [UserController::class,       'update'])->name('users.update');
+    Route::post('/tasks/assign',         [AdminTask::class, 'assign'])->name('tasks.assign');
+    Route::delete('/tasks/{task}/cancel',[AdminTask::class, 'cancel'])->name('tasks.cancel');
     Route::delete('/users/{user}',       [UserController::class,       'destroy'])->name('users.destroy');
     Route::patch('/users/{user}/toggle', [UserController::class,       'toggleActive'])->name('users.toggle');
     Route::get('/attendance',            [AdminAttendance::class,      'index'])->name('attendance.index');
@@ -53,11 +57,13 @@ Route::prefix('supervisor')->name('supervisor.')->middleware(['auth','role:super
     Route::post('/tasks/{task}/return',        [SupervisorTask::class,      'returnToRa'])->name('tasks.return');
     Route::get('/rooms',                       [RoomController::class,      'index'])->name('rooms.index');
     Route::put('/rooms/{room}/status',         [RoomController::class,      'updateStatus'])->name('rooms.status');
-    Route::get('/special-cases',              [SpecialCaseController::class,'index'])->name('special-cases.index');
-    Route::post('/special-cases',             [SpecialCaseController::class,'store'])->name('special-cases.store');
+    Route::get('/special-cases',               [SpecialCaseController::class,'index'])->name('special-cases.index');
+    Route::post('/special-cases',              [SpecialCaseController::class,'store'])->name('special-cases.store');
     Route::put('/special-cases/{case}',        [SpecialCaseController::class,'update'])->name('special-cases.update');
     Route::post('/special-cases/{case}/resolve',[SpecialCaseController::class,'resolve'])->name('special-cases.resolve');
-    Route::get('/attendance',                  [AdminAttendance::class,     'index'])->name('attendance.index');
+    route::get('/attendance',                  [SupervisorAttendance::class, 'index'])->name('attendance.index');  
+    Route::post('/attendance/checkin',         [SupervisorAttendance::class, 'checkIn'])->name('attendance.checkin');
+    Route::post('/attendance/checkout',        [SupervisorAttendance::class, 'checkOut'])->name('attendance.checkout');
     Route::get('/history',                     [HistoryController::class,   'index'])->name('history.index');
 });
 
