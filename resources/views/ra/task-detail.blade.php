@@ -3,46 +3,307 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/ra/room-checklist.css') }}">
+<style>
+/* ── TIMER ─────────────────────────────────────────────── */
+.timer-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    border-radius: 14px;
+    padding: 14px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    gap: 12px;
+}
+.timer-label {
+    font-size: 12px;
+    color: #888;
+    font-weight: 600;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+}
+.timer-display {
+    font-size: 32px;
+    font-weight: 800;
+    color: #1a1a1a;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 1px;
+    transition: color .3s;
+}
+.timer-display.warning { color: #f57f17; }
+.timer-display.danger  { color: #e53935; }
+.timer-track {
+    flex: 1;
+    height: 6px;
+    background: #f0f0f0;
+    border-radius: 6px;
+    overflow: hidden;
+    min-width: 60px;
+}
+.timer-fill {
+    height: 100%;
+    border-radius: 6px;
+    background: #43a047;
+    transition: width .5s linear, background .5s;
+}
+.timer-fill.warning { background: #f57f17; }
+.timer-fill.danger  { background: #e53935; }
+.timer-overtime {
+    font-size: 11px;
+    font-weight: 700;
+    color: #e53935;
+    background: #fde8e8;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: none;
+}
+.timer-overtime.show { display: inline-block; }
+
+/* ── START SCREEN ───────────────────────────────────────── */
+.start-screen {
+    background: #fff;
+    border-radius: 18px;
+    padding: 40px 28px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    margin-bottom: 16px;
+}
+.start-screen h3 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+}
+.start-screen p {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 8px;
+}
+.start-meta {
+    display: inline-flex;
+    gap: 20px;
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 12px 24px;
+    margin: 16px 0 24px;
+}
+.start-meta-item {
+    text-align: center;
+}
+.start-meta-val {
+    font-size: 22px;
+    font-weight: 800;
+    color: #7A0200;
+}
+.start-meta-key {
+    font-size: 11px;
+    color: #888;
+    margin-top: 2px;
+}
+.btn-start {
+    background: #7A0200;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 40px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    max-width: 320px;
+    transition: background .2s, transform .15s;
+    font-family: inherit;
+}
+.btn-start:hover {
+    background: #5a0100;
+    transform: translateY(-1px);
+}
+</style>
 @endpush
 
 @section('content')
 
-<a href="{{ route('ra.rooms.index') }}" class="back-link">← Kembali ke Kamar</a>
+<div class="checklist-page">
 
-<div class="card" role="application">
-    <h1>Kamar {{ $task->room->room_number }}</h1>
-    <p>{{ ucfirst($task->room->room_type) }} · {{ strtoupper(str_replace('_',' ', $task->room->status)) }}</p>
+    {{-- Back --}}
+    <a href="{{ route('ra.rooms.index') }}" class="back-link"
+       style="margin-bottom:14px; display:inline-flex">← Kembali ke Kamar</a>
 
-    <div class="tabs" role="tablist" id="tabNav"></div>
+    {{-- Header --}}
+    <div class="room-header-card">
+        <h2>Kamar {{ $task->room->room_number }}</h2>
+        <p>{{ ucfirst($task->room->room_type) }} · {{ strtoupper(str_replace('_', ' ', $task->room->status)) }}</p>
+    </div>
 
-    <div class="section-title" id="sectionTitle"></div>
-    <div class="checklist" id="checklist"></div>
+    {{-- Alert --}}
+    @if(session('success'))
+        <div class="alert alert-success" style="margin-bottom:12px">✅ {{ session('success') }}</div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-error" style="margin-bottom:12px">⚠️ {{ session('error') }}</div>
+    @endif
 
-    <div class="progress-row">
-        <div class="progress-meta">
-            <span id="progressLabel">Progress • 0/0</span>
-            <span class="progress-pct" id="progressPct">0%</span>
+    {{-- ══════════════════════════════════════════
+         KONDISI 1: PENDING — belum dimulai
+         ══════════════════════════════════════════ --}}
+    @if($task->status === 'pending')
+
+        <div class="start-screen">
+            <h3>Siap Mulai?</h3>
+            <p>Tugas akan dimulai dan timer langsung berjalan.</p>
+
+            <div class="start-meta">
+                <div class="start-meta-item">
+                    <div class="start-meta-val">{{ $task->time_limit }}</div>
+                    <div class="start-meta-key">Menit</div>
+                </div>
+                <div class="start-meta-item">
+                    <div class="start-meta-val">
+                        {{ $task->checklists->where('type', 'preparation')->count() +
+                           $task->checklists->where('type', 'cleaning')->count() }}
+                    </div>
+                    <div class="start-meta-key">Item Checklist</div>
+                </div>
+                <div class="start-meta-item">
+                    <div class="start-meta-val">{{ ucfirst($task->room->room_type) }}</div>
+                    <div class="start-meta-key">Tipe Kamar</div>
+                </div>
+            </div>
+
+            <form method="POST" action="{{ route('ra.tasks.start', $task->id) }}">
+                @csrf
+                <button type="submit" class="btn-start">▶ Mulai Tugas</button>
+            </form>
         </div>
-        <div class="bar"><div class="bar-fill" id="barFill"></div></div>
-    </div>
 
-    <div class="actions">
-        <button class="btn btn-secondary" id="btnPrev">← Sebelumnya</button>
-        <button class="btn btn-primary"   id="btnNext" disabled>Selanjutnya →</button>
-    </div>
+    {{-- ══════════════════════════════════════════
+         KONDISI 2: IN PROGRESS — timer + checklist
+         ══════════════════════════════════════════ --}}
+    @else
+
+        {{-- Timer Bar --}}
+        <div class="timer-bar">
+            <div>
+                <div class="timer-label">⏱ Timer</div>
+                <div class="timer-display" id="timerDisplay">--:--</div>
+            </div>
+            <div class="timer-track">
+                <div class="timer-fill" id="timerFill" style="width:100%"></div>
+            </div>
+            <div>
+                <div class="timer-overtime" id="timerOvertime">+00:00 melebihi</div>
+            </div>
+        </div>
+
+        {{-- Checklist card --}}
+        <div class="checklist-card">
+
+            {{-- Tabs --}}
+            <div class="cl-tabs" id="tabNav"></div>
+
+            {{-- Section title --}}
+            <div class="cl-section-title" id="sectionTitle"></div>
+
+            {{-- Items --}}
+            <div class="cl-grid" id="checklist"></div>
+
+            {{-- Progress --}}
+            <div class="cl-progress">
+                <div class="cl-progress-meta">
+                    <span id="progressLabel">Progress • 0/0</span>
+                    <span class="cl-progress-pct" id="progressPct">0%</span>
+                </div>
+                <div class="cl-bar"><div class="cl-bar-fill" id="barFill"></div></div>
+            </div>
+
+            {{-- Nav buttons --}}
+            <div class="cl-actions">
+                <button class="btn btn-secondary" id="btnPrev" style="display:none">← Sebelumnya</button>
+                <button class="btn btn-primary"   id="btnNext" disabled>Selanjutnya →</button>
+            </div>
+
+        </div>
+
+        {{-- Submit --}}
+        <form method="POST" action="{{ route('ra.tasks.submit', $task->id) }}"
+              id="submitForm" style="display:none">
+            @csrf
+            <button type="submit" class="btn-submit">✅ Submit ke Supervisor</button>
+        </form>
+
+    @endif
+
 </div>
-
-<form method="POST" action="{{ route('ra.tasks.submit', $task->id) }}" id="submitForm" style="display:none">
-    @csrf
-    <button type="submit" class="btn-submit">✅ Submit ke Supervisor</button>
-</form>
 
 @endsection
 
 @push('scripts')
 <script>
+// ── TIMER ────────────────────────────────────────────────────
+@if($task->status !== 'pending')
+(function() {
+    const startedAt  = new Date("{{ $task->started_at->toIso8601String() }}");
+    const timeLimitS = {{ $task->time_limit }} * 60; // konversi ke detik
+    const display    = document.getElementById('timerDisplay');
+    const fill       = document.getElementById('timerFill');
+    const overtime   = document.getElementById('timerOvertime');
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function tick() {
+        const elapsed  = Math.floor((Date.now() - startedAt.getTime()) / 1000);
+        const remain   = timeLimitS - elapsed;
+
+        if (remain >= 0) {
+            // Masih dalam batas waktu
+            const m = Math.floor(remain / 60);
+            const s = remain % 60;
+            display.textContent = `${pad(m)}:${pad(s)}`;
+
+            const pct = (remain / timeLimitS) * 100;
+            fill.style.width = pct + '%';
+
+            // Warning saat < 20%
+            if (pct <= 20) {
+                display.classList.add('warning');
+                fill.classList.add('warning');
+                display.classList.remove('danger');
+                fill.classList.remove('danger');
+            }
+            // Danger saat < 5%
+            if (pct <= 5) {
+                display.classList.add('danger');
+                fill.classList.add('danger');
+                display.classList.remove('warning');
+                fill.classList.remove('warning');
+            }
+
+            overtime.classList.remove('show');
+
+        } else {
+            // Overtime — timer merah, terus jalan
+            const over = Math.abs(remain);
+            const m    = Math.floor(over / 60);
+            const s    = over % 60;
+            display.textContent = `-${pad(m)}:${pad(s)}`;
+            display.classList.add('danger');
+            display.classList.remove('warning');
+            fill.style.width = '0%';
+            fill.classList.add('danger');
+            overtime.textContent = `+${pad(m)}:${pad(s)} melebihi batas`;
+            overtime.classList.add('show');
+        }
+    }
+
+    tick();
+    setInterval(tick, 1000);
+})();
+@endif
+
+// ── CHECKLIST ────────────────────────────────────────────────
+@if($task->status !== 'pending')
 const data = {
-    // ── FORM 1 ──────────────────────────────────────────────────
     bedroom: {
         label: 'Bedroom',
         sections: {
@@ -54,9 +315,9 @@ const data = {
                 'Bedside Table with Control Panel',
                 'Bedside Table + Drawers',
                 'Yellow Pages',
-                '~ Telephone + Telephone Line',
-                '~ Telephone Directory Label',
-                '~ Notepad + Pen',
+                'Telephone + Telephone Line',
+                'Telephone Directory Label',
+                'Notepad + Pen',
             ]
         }
     },
@@ -84,30 +345,30 @@ const data = {
                 'Bathroom Door + Handle',
                 'Bath Mat (1)',
                 'Bath Tub',
-                '~ Bath Tub Stopper',
-                '~ Drainage',
-                '~ Bath Tub Tap',
-                '~ Shower Hose',
-                '~ Safety Bar',
+                'Bath Tub Stopper',
+                'Drainage',
+                'Bath Tub Tap',
+                'Shower Hose',
+                'Safety Bar',
                 'Soap Tray + Soap',
                 'Vanity Counter',
-                '~ Mineral Water (2)',
-                '~ Tumbler Glasses (2)',
-                '~ Wooden Tray',
-                '~ Soap Dish',
-                '~ Soap 25 gr',
-                '~ Environment Tent Card',
-                '~ Tissue Box + Metal Cover',
-                '~ Tissue Paper',
+                'Mineral Water (2)',
+                'Tumbler Glasses (2)',
+                'Wooden Tray',
+                'Soap Dish',
+                'Soap 25 gr',
+                'Environment Tent Card',
+                'Tissue Box + Metal Cover',
+                'Tissue Paper',
                 'Amenities Tray',
-                '~ Conditioning Shampoo & Body Gel',
-                '~ Body Lotion',
-                '~ Bath Foam',
-                '~ Shaving Kit for VIP',
-                '~ Sewing Kit',
-                '~ Comb',
-                '~ Cotton Buds',
-                '~ Shower Cap',
+                'Conditioning Shampoo & Body Gel',
+                'Body Lotion',
+                'Bath Foam',
+                'Shaving Kit for VIP',
+                'Sewing Kit',
+                'Comb',
+                'Cotton Buds',
+                'Shower Cap',
             ]
         }
     },
@@ -116,31 +377,30 @@ const data = {
         sections: {
             'BATHROOM — BAGIAN 2': [
                 'Wash Basin',
-                '~ Wash Basin Tap',
-                '~ Wash Basin Stopper + Drainage',
+                'Wash Basin Tap',
+                'Wash Basin Stopper + Drainage',
                 'Bottle Opener',
                 'Hair Dryer',
                 'Waste Bin',
                 'Towel Hamper',
                 'Door Hook (1)',
                 'Towel Rack (2)',
-                '~ Bath Towel (2)',
-                '~ Hand Towel (2)',
+                'Bath Towel (2)',
+                'Hand Towel (2)',
                 'Toilet',
-                '~ Toilet Bowl + Flusher',
-                '~ Tissue Roll Holder',
-                '~ Tissue Roll (2)',
+                'Toilet Bowl + Flusher',
+                'Tissue Roll Holder',
+                'Tissue Roll (2)',
                 'Fire Sign',
                 'Wall Hook',
-                '~ Telephone / Line',
-                '~ Drainage',
+                'Telephone / Line',
+                'Drainage',
                 'Bathroom Walls',
                 'Bathroom Floor',
             ],
             'TERRACES': []
         }
     },
-    // ── FORM 2 (UJIKOM) ─────────────────────────────────────────
     entrance: {
         label: 'Entrance',
         sections: {
@@ -181,12 +441,12 @@ const data = {
                 'Refill Minibar (see MB Price list)',
                 'Water Boiler + Tray',
                 'Coofee / Tea Box',
-                '~ Coffee (2)',
-                '~ White Sugar (2)',
-                '~ Sweetener (2)',
-                '~ Brown Sugar (2)',
-                '~ Mix Creamer (2)',
-                '~ Tea (2)',
+                'Coffee (2)',
+                'White Sugar (2)',
+                'Sweetener (2)',
+                'Brown Sugar (2)',
+                'Mix Creamer (2)',
+                'Tea (2)',
                 'Coffee Mugs (2)',
                 'Tea Spoons (2)',
                 'Coffee Mugs Clothe',
@@ -226,14 +486,14 @@ const data = {
                 'Directory of Service',
                 'Stationery Folder',
                 'The Patra Flyer',
-                '~ Letterhead Small (2)',
-                '~ Small Envelope (2)',
-                '~ Postcard (2)',
-                '~ Pencil (1)',
+                'Letterhead Small (2)',
+                'Small Envelope (2)',
+                'Postcard (2)',
+                'Pencil (1)',
                 'Drawer',
-                '~ New Testament',
-                '~ Qiblat Sign',
-                '~ Fire Guide',
+                'New Testament',
+                'Qiblat Sign',
+                'Fire Guide',
             ]
         }
     },
@@ -274,6 +534,8 @@ const data = {
     },
 };
 
+// UPDATED VERSION BASED ON YOUR OLD CODE (FIXED UX, NO LAG, NO SCROLL JUMP)
+
 const tabOrder = Object.keys(data);
 const checked  = {};
 const unlocked = {};
@@ -288,7 +550,6 @@ tabOrder.forEach((key, i) => {
 
 let activeIdx = 0;
 
-// ── helpers ────────────────────────────────────────────────────
 function totalOf(key) {
     return Object.values(data[key].sections).reduce((s, items) => s + items.length, 0);
 }
@@ -300,34 +561,37 @@ function isTabComplete(key) {
     return t > 0 && doneOf(key) === t;
 }
 
-// ── render tabs ────────────────────────────────────────────────
 function renderTabs() {
     const nav = document.getElementById('tabNav');
     nav.innerHTML = '';
+
     tabOrder.forEach((key, i) => {
         const btn = document.createElement('button');
-        btn.className = 'tab' +
+        btn.type = 'button';
+        btn.className = 'cl-tab' +
             (i === activeIdx ? ' active' : '') +
             (isTabComplete(key) && i !== activeIdx ? ' done' : '');
-        btn.setAttribute('role', 'tab');
-        btn.setAttribute('aria-selected', i === activeIdx);
-        btn.textContent = (i + 1) + ' • ' + data[key].label;
 
-        if (!unlocked[key]) btn.disabled = true;
+        btn.textContent = isTabComplete(key) && i !== activeIdx
+            ? data[key].label + ' ✓'
+            : data[key].label;
+
+        btn.disabled = !unlocked[key];
+
         btn.addEventListener('click', () => {
             if (!unlocked[key]) return;
             activeIdx = i;
             render();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
+
         nav.appendChild(btn);
     });
 }
 
-// ── render checklist ───────────────────────────────────────────
 function render() {
     const key      = tabOrder[activeIdx];
-    const tabData  = data[key];
-    const sections = tabData.sections;
+    const sections = data[key].sections;
     const firstSec = Object.keys(sections)[0];
 
     document.getElementById('sectionTitle').textContent = firstSec;
@@ -335,48 +599,51 @@ function render() {
     const cl = document.getElementById('checklist');
     cl.innerHTML = '';
 
+    const multiSection = Object.keys(sections).filter(s => sections[s].length > 0).length > 1;
+
     Object.entries(sections).forEach(([secTitle, items]) => {
         if (items.length === 0) return;
 
-        // Sub-section header (kalau lebih dari 1 section dalam tab)
-        if (Object.keys(sections).filter(s => data[key].sections[s].length > 0).length > 1) {
+        if (multiSection) {
             const div = document.createElement('div');
-            div.className = 'subsection-header';
+            div.className = 'cl-subsection';
             div.textContent = secTitle;
             cl.appendChild(div);
         }
 
-        items.forEach((label, idx) => {
-            const id   = `${key}-${secTitle.replace(/\s/g,'-')}-${idx}`;
-            const item = document.createElement('div');
-            item.className = 'item' + (checked[key][secTitle][idx] ? ' checked' : '');
+        items.forEach((labelText, idx) => {
+            const id = `${key}-${secTitle.replace(/\s/g,'-')}-${idx}`;
 
-            const input    = document.createElement('input');
-            input.type     = 'checkbox';
-            input.id       = id;
-            input.checked  = checked[key][secTitle][idx];
+            // USE LABEL AS WRAPPER (NATIVE BEHAVIOR)
+            const item = document.createElement('label');
+            item.className = 'cl-item';
+
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.id = id;
+            input.checked = checked[key][secTitle][idx];
+
+            const span = document.createElement('span');
+            span.className = 'cl-item-label';
+            span.textContent = labelText;
 
             input.addEventListener('change', () => {
                 checked[key][secTitle][idx] = input.checked;
                 item.classList.toggle('checked', input.checked);
+
                 updateProgress();
                 updateButtons();
-                renderTabs();
-            });
 
-            const labelEl   = document.createElement('label');
-            labelEl.htmlFor = id;
-            labelEl.textContent = label;
-
-            item.appendChild(input);
-            item.appendChild(labelEl);
-
-            item.addEventListener('click', ev => {
-                if (ev.target !== input) {
-                    input.checked = !input.checked;
-                    input.dispatchEvent(new Event('change'));
+                // only update tabs when complete
+                if (isTabComplete(key)) {
+                    renderTabs();
                 }
             });
+
+            item.appendChild(input);
+            item.appendChild(span);
+
+            if (input.checked) item.classList.add('checked');
 
             cl.appendChild(item);
         });
@@ -387,19 +654,18 @@ function render() {
     renderTabs();
 }
 
-// ── progress ───────────────────────────────────────────────────
 function updateProgress() {
     const key   = tabOrder[activeIdx];
     const total = totalOf(key);
     const done  = doneOf(key);
     const pct   = total ? Math.round((done / total) * 100) : 0;
+
     document.getElementById('progressLabel').textContent =
-        `Progress ${data[key].label} • ${done}/${total}`;
+        `${data[key].label} • ${done}/${total}`;
     document.getElementById('progressPct').textContent = pct + '%';
     document.getElementById('barFill').style.width = pct + '%';
 }
 
-// ── buttons ────────────────────────────────────────────────────
 function updateButtons() {
     const key    = tabOrder[activeIdx];
     const isLast = activeIdx === tabOrder.length - 1;
@@ -412,9 +678,7 @@ function updateButtons() {
     btnPrev.style.display = activeIdx === 0 ? 'none' : '';
     btnNext.style.display = isLast ? 'none' : '';
 
-    btnNext.disabled      = !isDone;
-    btnNext.style.opacity = isDone ? '1' : '0.55';
-    btnNext.style.cursor  = isDone ? '' : 'not-allowed';
+    btnNext.disabled = !isDone;
 
     const nextLabel = tabOrder[activeIdx + 1] ? data[tabOrder[activeIdx + 1]].label : '';
     btnNext.textContent = `Lanjut ke ${nextLabel} →`;
@@ -422,15 +686,19 @@ function updateButtons() {
     submitForm.style.display = isLast && isDone ? '' : 'none';
 }
 
-// ── nav ────────────────────────────────────────────────────────
+// NAVIGATION
+
 document.getElementById('btnNext').addEventListener('click', () => {
     const nextKey = tabOrder[activeIdx + 1];
     if (!nextKey) return;
+
     unlocked[nextKey] = true;
     activeIdx++;
+
     render();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+
 
 document.getElementById('btnPrev').addEventListener('click', () => {
     if (activeIdx > 0) {
@@ -440,7 +708,8 @@ document.getElementById('btnPrev').addEventListener('click', () => {
     }
 });
 
-// ── init ───────────────────────────────────────────────────────
 render();
+
+@endif
 </script>
 @endpush

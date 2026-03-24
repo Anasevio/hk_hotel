@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
 use App\Models\{User, Room, Task, Attendance, RoomStatusLog};
 
@@ -17,6 +18,12 @@ class DashboardController extends Controller
             'staffList'       => User::where('role', '!=', 'admin')
                                     ->with(['todayAttendance'])
                                     ->orderBy('role')->orderBy('name')->get(),
+            'badgeMap'        => [
+                'hadir' => ['label' => 'Hadir', 'class' => 'badge-green'],
+                'izin'  => ['label' => 'Izin',  'class' => 'badge-yellow'],
+                'sakit' => ['label' => 'Sakit', 'class' => 'badge-blue'],
+                'alfa'  => ['label' => 'Alfa',  'class' => 'badge-gray'],
+            ],
         ]);
     }
 }

@@ -1,14 +1,6 @@
 @extends('layouts.admin')
 @section('title','Log Aktivitas')
 @section('page-title','Log Aktivitas')
-@section('sidebar-nav')
-<a href="{{ route('admin.dashboard') }}"><i data-feather="grid"></i> Dashboard</a>
-<a href="{{ route('admin.rooms.index') }}"><i data-feather="home"></i> Status Kamar</a>
-<a href="{{ route('admin.users.index') }}"><i data-feather="users"></i> Kelola Akun</a>
-<a href="{{ route('admin.attendance.index') }}"><i data-feather="calendar"></i> Absensi</a>
-<a href="{{ route('admin.timer.index') }}"><i data-feather="clock"></i> Timer Tugas</a>
-<a href="{{ route('admin.history.index') }}" class="active"><i data-feather="activity"></i> Log Aktivitas</a>
-@endsection
 
 @section('content')
 <div class="card">

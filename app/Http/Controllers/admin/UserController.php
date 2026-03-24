@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -8,9 +9,16 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
+    // Opsi role didefinisikan sekali di sini,
+    // di-pass ke view sehingga blade tidak perlu hardcode.
+    private const ROLES = ['ra', 'supervisor', 'manager', 'admin'];
+
     public function index()
     {
-        return view('admin.users', ['users' => User::orderBy('role')->orderBy('name')->get()]);
+        return view('admin.users', [
+            'users'  => User::orderBy('role')->orderBy('name')->get(),
+            'roles'  => self::ROLES,
+        ]);
     }
 
     public function store(Request $request)
@@ -19,9 +27,15 @@ class UserController extends Controller
             'name'     => 'required|string|max:100',
             'username' => 'required|string|max:50|unique:users',
             'password' => 'required|string|min:6',
-            'role'     => 'required|in:admin,supervisor,manager,ra',
+            'role'     => ['required', Rule::in(self::ROLES)],
         ]);
-        User::create([...$d, 'password' => Hash::make($d['password']), 'is_active' => true]);
+
+        User::create([
+            ...$d,
+            'password'  => Hash::make($d['password']),
+            'is_active' => true,
+        ]);
+
         return back()->with('success', "Akun {$d['name']} berhasil dibuat.");
     }
 
@@ -29,29 +43,47 @@ class UserController extends Controller
     {
         $d = $request->validate([
             'name'     => 'required|string|max:100',
-            'username' => ['required','string','max:50', Rule::unique('users')->ignore($user->id)],
-            'role'     => 'required|in:admin,supervisor,manager,ra',
+            'username' => ['required', 'string', 'max:50', Rule::unique('users')->ignore($user->id)],
+            'role'     => ['required', Rule::in(self::ROLES)],
             'password' => 'nullable|string|min:6',
         ]);
-        $update = ['name' => $d['name'], 'username' => $d['username'], 'role' => $d['role']];
-        if (!empty($d['password'])) $update['password'] = Hash::make($d['password']);
+
+        $update = [
+            'name'     => $d['name'],
+            'username' => $d['username'],
+            'role'     => $d['role'],
+        ];
+
+        if (!empty($d['password'])) {
+            $update['password'] = Hash::make($d['password']);
+        }
+
         $user->update($update);
+
         return back()->with('success', "Akun {$user->name} diupdate.");
     }
 
     public function destroy(User $user)
     {
-        if ($user->id === auth()->id()) return back()->with('error', 'Tidak bisa hapus akun sendiri.');
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'Tidak bisa hapus akun sendiri.');
+        }
+
         $name = $user->name;
         $user->delete();
+
         return back()->with('success', "Akun {$name} dihapus.");
     }
 
     public function toggleActive(User $user)
     {
-        if ($user->id === auth()->id()) return back()->with('error', 'Tidak bisa nonaktifkan akun sendiri.');
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'Tidak bisa nonaktifkan akun sendiri.');
+        }
+
         $user->update(['is_active' => !$user->is_active]);
         $status = $user->is_active ? 'diaktifkan' : 'dinonaktifkan';
+
         return back()->with('success', "Akun {$user->name} {$status}.");
     }
 }

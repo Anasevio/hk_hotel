@@ -7,6 +7,7 @@
     <title>@yield('title', 'HK Perhotelan')</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/ra/dashboard_ra.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/ra/absensi_ra.css') }}">
     @stack('styles')
 </head>
 <body>
@@ -26,7 +27,7 @@
     <div class="topbar-right">
         <div class="topbar-user">
             <div class="uname">{{ auth()->user()->name }}</div>
-            <div class="urole">Shift {{ ucfirst(auth()->user()->shift) }}</div>
+            <div class="urole">{{ ucfirst(auth()->user()->role) }}</div>
         </div>
         <form method="POST" action="{{ route('logout') }}">
             @csrf
@@ -37,8 +38,12 @@
 
 {{-- CONTENT --}}
 <div class="main-wrap">
-    @if(session('success'))<div class="alert alert-success">✅ {{ session('success') }}</div>@endif
-    @if(session('error'))<div class="alert alert-error">⚠️ {{ session('error') }}</div>@endif
+    @if(session('success'))
+        <div class="alert alert-success">✅ {{ session('success') }}</div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-error">⚠️ {{ session('error') }}</div>
+    @endif
     @yield('content')
 </div>
 

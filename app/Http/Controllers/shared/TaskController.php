@@ -1,21 +1,35 @@
 <?php
 
-// Tambahkan method index() ini di
-// app/Http/Controllers/Admin/DashboardController.php
-// ATAU buat AdminRoomController terpisah
-
-// ── Jika pakai Shared/RoomController — update method index() ──────
-
 namespace App\Http\Controllers\Shared;
 
 use App\Http\Controllers\Controller;
 use App\Models\Room;
 use App\Models\RoomStatusLog;
+use App\Models\TimerSetting;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class RoomController extends Controller
+class TaskController extends Controller
 {
+    // Map status kamar → CSS class dan label teks.
+    // Didefinisikan sebagai konstanta agar mudah diubah
+    // tanpa harus menyentuh blade.
+    private const STATUS_CLASS = [
+        'vacant_dirty'       => 'vd',
+        'vacant_clean'       => 'vc',
+        'vacant_ready'       => 'vr',
+        'occupied'           => 'oc',
+        'expected_departure' => 'ed',
+    ];
+
+    private const STATUS_LABEL = [
+        'vacant_dirty'       => 'Vacant Dirty',
+        'vacant_clean'       => 'Vacant Clean',
+        'vacant_ready'       => 'Vacant Ready',
+        'occupied'           => 'Occupied',
+        'expected_departure' => 'Exp. Departure',
+    ];
+
     // ── Admin / Supervisor / Manager: semua kamar ──────────────────
     public function index()
     {
@@ -31,7 +45,14 @@ class RoomController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('admin.rooms', compact('rooms', 'raList'));
+        // Timer settings untuk auto-fill durasi saat assign
+        $timerSettings = TimerSetting::orderBy('key')->get();
+
+        return view('admin.rooms', compact('rooms', 'raList', 'timerSettings') + [
+            'clsMap'      => self::STATUS_CLASS,
+            'lblMap'      => self::STATUS_LABEL,
+            'floorGroups' => $rooms->groupBy('floor'),
+        ]);
     }
 
     // ── RA: hanya kamar yang di-assign ke RA ini ───────────────────
@@ -45,7 +66,7 @@ class RoomController extends Controller
             ->orderBy('room_number')
             ->get();
 
-        return view('ra.rooms', compact('rooms'));
+        return view('ra.task', compact('rooms'));
     }
 
     // ── RA: detail satu kamar → redirect ke task ───────────────────
@@ -72,7 +93,7 @@ class RoomController extends Controller
     public function updateStatus(Request $request, Room $room)
     {
         $request->validate([
-            'status' => 'required|in:vacant_dirty,vacant_clean,vacant_ready,occupied,expected_departure',
+            'status' => 'required|in:' . implode(',', array_keys(self::STATUS_CLASS)),
             'reason' => 'nullable|string|max:255',
         ]);
 

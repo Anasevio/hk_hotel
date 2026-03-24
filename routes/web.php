@@ -13,11 +13,12 @@ use App\Http\Controllers\Supervisor\HistoryController as HistoryController;
 use App\Http\Controllers\Supervisor\TaskController as SupervisorTask;
 use App\Http\Controllers\Supervisor\SpecialCaseController;
 use App\Http\Controllers\Manager\DashboardController as ManagerDashboard;
+use App\Http\Controllers\Manager\AttendanceController as ManagerAttendance;
 use App\Http\Controllers\Manager\InspectionController;
 use App\Http\Controllers\Ra\DashboardController as RaDashboard;
 use App\Http\Controllers\Ra\TaskController as RaTask;
 use App\Http\Controllers\Ra\AttendanceController as RaAttendance;
-use App\Http\Controllers\Shared\RoomController;
+use App\Http\Controllers\Shared\TaskController as RoomController;
 
 // Root → login
 Route::get('/', fn() => redirect()->route('login'));
@@ -75,7 +76,10 @@ Route::prefix('manager')->name('manager.')->middleware(['auth','role:manager'])-
     Route::post('/inspections/{task}/approve', [InspectionController::class,'approve'])->name('inspections.approve');
     Route::post('/inspections/{task}/return',  [InspectionController::class,'returnToSupervisor'])->name('inspections.return');
     Route::get('/rooms',                       [RoomController::class,    'index'])->name('rooms.index');
-    Route::get('/attendance',                  [AdminAttendance::class,   'index'])->name('attendance.index');
+    Route::get('/attendance',           [ManagerAttendance::class, 'index'])->name('attendance.index');
+    Route::post('/attendance/checkin',  [ManagerAttendance::class, 'checkIn'])->name('attendance.checkin');
+    Route::post('/attendance/checkout', [ManagerAttendance::class, 'checkOut'])->name('attendance.checkout');
+ 
     Route::get('/history',                     [HistoryController::class, 'index'])->name('history.index');
 });
 

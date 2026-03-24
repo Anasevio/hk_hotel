@@ -1,0 +1,191 @@
+/* ============================================================
+   rooms.css — style spesifik halaman Status Kamar
+   Shared styles (modal, room-box, room-dot, dll) ada di admin.css
+   ============================================================ */
+
+/* ── Stats Row (layout 5 kolom, spesifik halaman rooms) ───── */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+/* Border warna per status (extend .stat-box dari admin.css) */
+.stat-box {
+    border-left: 4px solid transparent;
+}
+.stat-box.vd {
+    border-color: #e53935;
+}
+.stat-box.vc {
+    border-color: #1e88e5;
+}
+.stat-box.vr {
+    border-color: #43a047;
+}
+.stat-box.oc {
+    border-color: #f9a825;
+}
+.stat-box.ed {
+    border-color: #fb8c00;
+}
+
+@media (max-width: 768px) {
+    .stats-row {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ── Filter Bar ───────────────────────────────────────────── */
+.filter-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+.filter-btn {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1.5px solid #e0e0e0;
+    background: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    color: #666;
+}
+.filter-btn:hover,
+.filter-btn.active {
+    background: #7a0200;
+    color: #fff;
+    border-color: #7a0200;
+}
+
+/* ── Floor Label ──────────────────────────────────────────── */
+.floor-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #999;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    margin-top: 4px;
+}
+
+/* ── Room Assigned & Task Progress ───────────────────────── */
+.room-assigned {
+    font-size: 10px;
+    color: #555;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-weight: 500;
+}
+.room-task-progress {
+    margin-top: 6px;
+    height: 3px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+.room-task-bar {
+    height: 100%;
+    background: #7a0200;
+    border-radius: 3px;
+}
+
+/* ── Need Assign Badge ────────────────────────────────────── */
+.need-assign-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #e53935;
+    border: 2px solid #fff;
+    animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+/* ── Modal Tabs (spesifik rooms modal) ────────────────────── */
+.modal-tabs {
+    display: flex;
+    border-bottom: 2px solid #f5f5f5;
+    margin-bottom: 18px;
+}
+.modal-tab {
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+}
+.modal-tab.active {
+    color: #7a0200;
+    border-color: #7a0200;
+}
+
+.tab-panel {
+    display: none;
+}
+.tab-panel.active {
+    display: block;
+}
+
+/* ── Info Rows (dalam modal) ──────────────────────────────── */
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 13px;
+    border-bottom: 1px solid #fafafa;
+}
+.info-row:last-child {
+    border-bottom: none;
+}
+.info-key {
+    color: #888;
+}
+.info-val {
+    color: #1a1a1a;
+    font-weight: 600;
+}
+
+.divider {
+    height: 1px;
+    background: #f5f5f5;
+    margin: 16px 0;
+}
+
+/* ── Timer Input ──────────────────────────────────────────── */
+.timer-hint {
+    display: inline-block;
+    font-size: 11px;
+    color: #888;
+    font-weight: 400;
+    margin-left: 6px;
+}
+.timer-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.timer-input-wrap input {
+    max-width: 100px;
+}

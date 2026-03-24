@@ -1,5 +1,6 @@
 @extends('layouts.ra')
-@section('title','Dashboard')
+@section('title', 'Dashboard')
+
 @section('content')
 
 {{-- Welcome Card --}}
@@ -14,12 +15,21 @@
     </form>
 </div>
 
+{{-- Alert tugas aktif --}}
 @if($activeTask)
 <div class="alert alert-warn" style="margin-bottom:16px">
     ⚡ Kamu punya tugas aktif — Kamar <strong>{{ $activeTask->room->room_number }}</strong>
     ({{ $activeTask->overall_progress }}%)
-    <a href="{{ route('ra.tasks.show', $activeTask->id) }}" style="font-weight:700;color:inherit;margin-left:8px">Lanjutkan →</a>
+    <a href="{{ route('ra.tasks.show', $activeTask->id) }}"
+       style="font-weight:700;color:inherit;margin-left:8px">Lanjutkan →</a>
 </div>
+@endif
+
+@if(session('success'))
+    <div class="alert alert-success" style="margin-bottom:16px">✅ {{ session('success') }}</div>
+@endif
+@if(session('error'))
+    <div class="alert alert-error" style="margin-bottom:16px">⚠️ {{ session('error') }}</div>
 @endif
 
 {{-- Menu Grid --}}
@@ -27,19 +37,19 @@
     <a href="{{ route('ra.attendance.index') }}" class="menu-card">
         <div class="menu-icon">📋</div>
         <div class="menu-title">Absensi</div>
-        <div class="menu-desc">Catat Kehadiran Secara Online</div>
+        <div class="menu-desc">Catat kehadiran secara online</div>
         <span class="menu-link">Lihat Absensi ›</span>
     </a>
     <a href="{{ route('ra.rooms.index') }}" class="menu-card">
         <div class="menu-icon">🛏️</div>
         <div class="menu-title">Tugas</div>
-        <div class="menu-desc">Lihat dan Kumpulkan Tugas</div>
+        <div class="menu-desc">Lihat dan kerjakan tugas kamar</div>
         <span class="menu-link">Lihat Tugas ›</span>
     </a>
     <a href="{{ route('ra.history.index') }}" class="menu-card">
         <div class="menu-icon">📢</div>
         <div class="menu-title">Riwayat</div>
-        <div class="menu-desc">Riwayat Tugas</div>
+        <div class="menu-desc">Riwayat tugas yang telah selesai</div>
         <span class="menu-link">Lihat Riwayat ›</span>
     </a>
 </div>

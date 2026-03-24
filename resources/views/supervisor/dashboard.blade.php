@@ -1,12 +1,13 @@
 @extends('layouts.supervisor')
-@section('title','Dashboard')
-@section('content')
+@section('title', 'Dashboard Supervisor')
 
+@section('content')
+<link rel="stylesheet" href="{{ asset('css/supervisor/dashboard.css') }}">
 {{-- Welcome Card --}}
 <div class="welcome-card">
     <div class="welcome-text">
         <div class="greeting">Selamat Datang, {{ auth()->user()->name }}</div>
-        <div class="subtext">Kelola pekerjaan hari ini· {{ now()->translatedFormat('l, d F Y') }}</div>
+        <div class="subtext">Panel Supervisor · {{ now()->translatedFormat('l, d F Y') }}</div>
     </div>
     <form method="POST" action="{{ route('logout') }}">
         @csrf
@@ -14,11 +15,27 @@
     </form>
 </div>
 
-@if($activeTask)
-<div class="alert alert-warn" style="margin-bottom:16px">
-    ⚡ Kamu punya tugas aktif — Kamar <strong>{{ $activeTask->room->room_number }}</strong>
-    ({{ $activeTask->overall_progress }}%)
-    <a href="{{ route('supervisor.tasks.show', $activeTask->id) }}" style="font-weight:700;color:inherit;margin-left:8px">Lanjutkan →</a>
+{{-- Stats ringkas --}}
+@if(isset($pendingTasks) || isset($totalRooms))
+<div class="sv-stats">
+    @if(isset($pendingTasks))
+    <div class="sv-stat-box">
+        <div class="sv-stat-val">{{ $pendingTasks }}</div>
+        <div class="sv-stat-label">Tugas Menunggu Review</div>
+    </div>
+    @endif
+    @if(isset($inProgressTasks))
+    <div class="sv-stat-box">
+        <div class="sv-stat-val sv-stat-val--warn">{{ $inProgressTasks }}</div>
+        <div class="sv-stat-label">Sedang Dikerjakan</div>
+    </div>
+    @endif
+    @if(isset($todayAttendance) && isset($totalStaff))
+    <div class="sv-stat-box">
+        <div class="sv-stat-val sv-stat-val--ok">{{ $todayAttendance }}<span class="sv-stat-denom">/{{ $totalStaff }}</span></div>
+        <div class="sv-stat-label">Hadir Hari Ini</div>
+    </div>
+    @endif
 </div>
 @endif
 
@@ -27,20 +44,20 @@
     <a href="{{ route('supervisor.attendance.index') }}" class="menu-card">
         <div class="menu-icon">📋</div>
         <div class="menu-title">Absensi</div>
-        <div class="menu-desc">Catat Kehadiran Secara Online</div>
+        <div class="menu-desc">Catat dan lihat rekap kehadiran</div>
         <span class="menu-link">Lihat Absensi ›</span>
     </a>
-    <a href="{{ route('supervisor.rooms.index') }}" class="menu-card">
-        <div class="menu-icon">🛏️</div>
-        <div class="menu-title">Tugas</div>
-        <div class="menu-desc">Lihat dan Kumpulkan Tugas</div>
-        <span class="menu-link">Lihat Tugas ›</span>
+    <a href="{{ route('supervisor.tasks.index') }}" class="menu-card">
+        <div class="menu-icon">✅</div>
+        <div class="menu-title">Review Tugas</div>
+        <div class="menu-desc">Periksa dan approve tugas RA</div>
+        <span class="menu-link">Review Sekarang ›</span>
     </a>
     <a href="{{ route('supervisor.history.index') }}" class="menu-card">
-        <div class="menu-icon">📢</div>
-        <div class="menu-title">Riwayat</div>
-        <div class="menu-desc">Riwayat Tugas</div>
-        <span class="menu-link">Lihat Riwayat ›</span>
+        <div class="menu-icon">📊</div>
+        <div class="menu-title">Log Aktivitas</div>
+        <div class="menu-desc">Riwayat perubahan dan tugas selesai</div>
+        <span class="menu-link">Lihat Log ›</span>
     </a>
 </div>
 

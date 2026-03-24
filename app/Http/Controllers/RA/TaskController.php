@@ -41,8 +41,6 @@ class TaskController extends Controller
             'status'     => 'in_progress',
             'started_at' => $task->started_at ?? now(), // tidak reset timer jika returned
         ]);
-
-        return back()->with('success', 'Tugas dimulai! Semangat! 💪');
     }
 
     // ── Toggle centang item checklist (AJAX) ──────────────────────

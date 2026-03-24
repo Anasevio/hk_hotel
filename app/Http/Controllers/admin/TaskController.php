@@ -9,9 +9,58 @@ use App\Models\TaskChecklist;
 use App\Models\TimerSetting;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class TaskController extends Controller
 {
+    // ── Checklist Templates ────────────────────────────────────
+    // Edit di sini jika ingin menambah/mengubah item checklist.
+    // 'order' di-generate otomatis dari urutan array (index + 1).
+
+    private const PREP_ITEMS = [
+        'Bed Sheet (2 set)',
+        'Pillow Case (4 pcs)',
+        'Duvet Cover',
+        'Bath Towel (2)',
+        'Hand Towel (2)',
+        'Face Towel (2)',
+        'Mop & Bucket',
+        'Vacuum Cleaner',
+        'Spray Bottle',
+        'Lap Microfiber',
+        'Sikat Toilet',
+        'Sarung Tangan',
+        'Sabun Mandi',
+        'Shampoo',
+        'Conditioner',
+        'Body Lotion',
+        'Dental Kit',
+        'Coffee & Tea Set',
+    ];
+
+    private const CLEAN_ITEMS = [
+        ['name' => 'Ganti sprei & sarung bantal',  'minutes' => 10],
+        ['name' => 'Bersihkan headboard',           'minutes' => 3],
+        ['name' => 'Lap meja & nakas',              'minutes' => 3],
+        ['name' => 'Vacuum karpet',                 'minutes' => 5],
+        ['name' => 'Rapikan bantal',                'minutes' => 2],
+        ['name' => 'Bersihkan cermin',              'minutes' => 2],
+        ['name' => 'Lap sofa & meja',               'minutes' => 3],
+        ['name' => 'Bersihkan TV & remote',         'minutes' => 2],
+        ['name' => 'Lap jendela & kaca',            'minutes' => 3],
+        ['name' => 'Vacuum sofa',                   'minutes' => 3],
+        ['name' => 'Rapikan dekorasi',              'minutes' => 2],
+        ['name' => 'Cek minibar',                   'minutes' => 2],
+        ['name' => 'Sikat toilet & wastafel',       'minutes' => 5],
+        ['name' => 'Bersihkan shower/bathtub',      'minutes' => 5],
+        ['name' => 'Lap cermin kamar mandi',        'minutes' => 2],
+        ['name' => 'Ganti handuk & amenities',      'minutes' => 3],
+        ['name' => 'Bersihkan lantai',              'minutes' => 5],
+        ['name' => 'Cek exhaust fan',               'minutes' => 1],
+    ];
+
+    // ── Methods ────────────────────────────────────────────────
+
     /**
      * Assign tugas kamar ke RA
      * POST /admin/tasks/assign
@@ -21,6 +70,7 @@ class TaskController extends Controller
         $request->validate([
             'room_id'     => 'required|exists:rooms,id',
             'assigned_to' => 'required|exists:users,id',
+            'time_limit'  => 'required|integer|min:1|max:480',
         ]);
 
         $room = Room::findOrFail($request->room_id);
@@ -29,101 +79,50 @@ class TaskController extends Controller
                     ->where('is_active', true)
                     ->firstOrFail();
 
-        // Cek apakah kamar sudah punya task aktif
-        $existingTask = $room->tasks()
-            ->whereNotIn('status', ['completed'])
-            ->exists();
-
-        if ($existingTask) {
+        if ($room->tasks()->whereNotIn('status', ['completed'])->exists()) {
             return back()->with('error', "Kamar {$room->room_number} sudah memiliki tugas aktif.");
         }
 
-        // Kamar harus vacant_dirty atau expected_departure untuk bisa ditugaskan
         if (!in_array($room->status, ['vacant_dirty', 'expected_departure'])) {
             return back()->with('error', "Kamar {$room->room_number} tidak perlu dibersihkan (status: {$room->statusLabel}).");
         }
 
-        // Ambil time limit dari timer settings
-        $timeLimit = TimerSetting::getDuration($room->status);
-
-        // Buat task
         $task = Task::create([
             'room_id'     => $room->id,
             'assigned_to' => $ra->id,
             'assigned_by' => auth()->id(),
             'status'      => 'pending',
-            'time_limit'  => $timeLimit,
+            'time_limit'  => $request->time_limit,
         ]);
 
-        // Buat checklist preparation (18 item)
-        $prepItems = [
-            ['item_name' => 'Bed Sheet (2 set)',    'order' => 1],
-            ['item_name' => 'Pillow Case (4 pcs)',  'order' => 2],
-            ['item_name' => 'Duvet Cover',          'order' => 3],
-            ['item_name' => 'Bath Towel (2)',        'order' => 4],
-            ['item_name' => 'Hand Towel (2)',        'order' => 5],
-            ['item_name' => 'Face Towel (2)',        'order' => 6],
-            ['item_name' => 'Mop & Bucket',         'order' => 7],
-            ['item_name' => 'Vacuum Cleaner',       'order' => 8],
-            ['item_name' => 'Spray Bottle',         'order' => 9],
-            ['item_name' => 'Lap Microfiber',       'order' => 10],
-            ['item_name' => 'Sikat Toilet',         'order' => 11],
-            ['item_name' => 'Sarung Tangan',        'order' => 12],
-            ['item_name' => 'Sabun Mandi',          'order' => 13],
-            ['item_name' => 'Shampoo',              'order' => 14],
-            ['item_name' => 'Conditioner',          'order' => 15],
-            ['item_name' => 'Body Lotion',          'order' => 16],
-            ['item_name' => 'Dental Kit',           'order' => 17],
-            ['item_name' => 'Coffee & Tea Set',     'order' => 18],
-        ];
+        // Insert semua checklist dalam satu query, bukan 36x create()
+        TaskChecklist::insert($this->buildChecklists($task->id));
 
-        // Buat checklist cleaning (18 item)
-        $cleanItems = [
-            ['item_name' => 'Ganti sprei & sarung bantal',  'order' => 1,  'estimated_minutes' => 10],
-            ['item_name' => 'Bersihkan headboard',          'order' => 2,  'estimated_minutes' => 3],
-            ['item_name' => 'Lap meja & nakas',             'order' => 3,  'estimated_minutes' => 3],
-            ['item_name' => 'Vacuum karpet',                'order' => 4,  'estimated_minutes' => 5],
-            ['item_name' => 'Rapikan bantal',               'order' => 5,  'estimated_minutes' => 2],
-            ['item_name' => 'Bersihkan cermin',             'order' => 6,  'estimated_minutes' => 2],
-            ['item_name' => 'Lap sofa & meja',              'order' => 7,  'estimated_minutes' => 3],
-            ['item_name' => 'Bersihkan TV & remote',        'order' => 8,  'estimated_minutes' => 2],
-            ['item_name' => 'Lap jendela & kaca',           'order' => 9,  'estimated_minutes' => 3],
-            ['item_name' => 'Vacuum sofa',                  'order' => 10, 'estimated_minutes' => 3],
-            ['item_name' => 'Rapikan dekorasi',             'order' => 11, 'estimated_minutes' => 2],
-            ['item_name' => 'Cek minibar',                  'order' => 12, 'estimated_minutes' => 2],
-            ['item_name' => 'Sikat toilet & wastafel',      'order' => 13, 'estimated_minutes' => 5],
-            ['item_name' => 'Bersihkan shower/bathtub',     'order' => 14, 'estimated_minutes' => 5],
-            ['item_name' => 'Lap cermin kamar mandi',       'order' => 15, 'estimated_minutes' => 2],
-            ['item_name' => 'Ganti handuk & amenities',     'order' => 16, 'estimated_minutes' => 3],
-            ['item_name' => 'Bersihkan lantai',             'order' => 17, 'estimated_minutes' => 5],
-            ['item_name' => 'Cek exhaust fan',              'order' => 18, 'estimated_minutes' => 1],
-        ];
-
-        foreach ($prepItems as $item) {
-            TaskChecklist::create([
-                'task_id'   => $task->id,
-                'type'      => 'preparation',
-                'item_name' => $item['item_name'],
-                'order'     => $item['order'],
-            ]);
-        }
-
-        foreach ($cleanItems as $item) {
-            TaskChecklist::create([
-                'task_id'            => $task->id,
-                'type'               => 'cleaning',
-                'item_name'          => $item['item_name'],
-                'order'              => $item['order'],
-                'estimated_minutes'  => $item['estimated_minutes'],
-            ]);
-        }
-
-        // Assign kamar ke RA
         $room->update(['assigned_to' => $ra->id]);
 
         return back()->with('success',
-            "Tugas kamar {$room->room_number} berhasil diberikan ke {$ra->name}."
+            "Tugas kamar {$room->room_number} berhasil diberikan ke {$ra->name} dengan timer {$request->time_limit} menit."
         );
+    }
+
+    /**
+     * RA mulai mengerjakan tugas
+     * POST /ra/tasks/{task}/start
+     */
+    public function start(Task $task)
+    {
+        abort_if($task->assigned_to !== auth()->id(), 403);
+
+        if ($task->status !== 'pending') {
+            return back()->with('error', 'Tugas sudah dimulai atau tidak bisa diubah.');
+        }
+
+        $task->update([
+            'status'     => 'in_progress',
+            'started_at' => now(),
+        ]);
+
+        return back()->with('success', 'Tugas dimulai! Timer berjalan.');
     }
 
     /**
@@ -132,7 +131,6 @@ class TaskController extends Controller
      */
     public function cancel(Task $task)
     {
-        // Hanya bisa cancel jika masih pending atau in_progress
         if (!in_array($task->status, ['pending', 'in_progress'])) {
             return back()->with('error', 'Tugas tidak bisa dibatalkan karena sudah disubmit.');
         }
@@ -140,15 +138,50 @@ class TaskController extends Controller
         $roomNumber = $task->room->room_number;
         $raName     = $task->assignedUser->name;
 
-        // Lepas assignment kamar
         $task->room->update(['assigned_to' => null]);
-
-        // Hapus semua checklist lalu hapus task
         $task->checklists()->delete();
         $task->delete();
 
         return back()->with('success',
             "Tugas kamar {$roomNumber} dari {$raName} berhasil dibatalkan."
         );
+    }
+
+    // ── Helpers ────────────────────────────────────────────────
+
+    /**
+     * Bangun array checklist siap untuk TaskChecklist::insert().
+     * Menggunakan konstanta PREP_ITEMS dan CLEAN_ITEMS di atas.
+     */
+    private function buildChecklists(int $taskId): array
+    {
+        $now  = Carbon::now();
+        $rows = [];
+
+        foreach (self::PREP_ITEMS as $i => $name) {
+            $rows[] = [
+                'task_id'           => $taskId,
+                'type'              => 'preparation',
+                'item_name'         => $name,
+                'order'             => $i + 1,
+                'estimated_minutes' => null,
+                'created_at'        => $now,
+                'updated_at'        => $now,
+            ];
+        }
+
+        foreach (self::CLEAN_ITEMS as $i => $item) {
+            $rows[] = [
+                'task_id'           => $taskId,
+                'type'              => 'cleaning',
+                'item_name'         => $item['name'],
+                'order'             => $i + 1,
+                'estimated_minutes' => $item['minutes'],
+                'created_at'        => $now,
+                'updated_at'        => $now,
+            ];
+        }
+
+        return $rows;
     }
 }

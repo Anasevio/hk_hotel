@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers\Manager;
+
 use App\Http\Controllers\Controller;
 use App\Models\{Room, Task};
 
@@ -7,14 +9,23 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        return view('manager.dashboard', [
-            'vacantReady'    => Room::where('status', 'vacant_ready')->count(),
-            'occupied'       => Room::where('status', 'occupied')->count(),
-            'vacantDirty'    => Room::where('status', 'vacant_dirty')->count(),
-            'pendingApprove' => Task::where('status', 'pending_manager')->count(),
-            'roomSummary'    => Room::selectRaw('status, count(*) as total')->groupBy('status')->get(),
-            'pendingTasks'   => Task::where('status', 'pending_manager')
-                                   ->with(['room', 'assignedUser', 'assignedByUser'])->get(),
-        ]);
+        $user = auth()->user();
+
+        $myRooms = Room::where('assigned_to', $user->id)->get();
+
+        $activeTask = Task::where('assigned_to', $user->id)
+            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->with('room')
+            ->latest()
+            ->first();
+
+        $completedToday = Task::where('assigned_to', $user->id)
+            ->where('status', 'completed')
+            ->whereDate('updated_at', today())
+            ->count();
+
+        $todayAtt = $user->todayAttendance;
+
+        return view('manager.dashboard', compact('myRooms', 'activeTask', 'completedToday', 'todayAtt'));
     }
 }

@@ -1,14 +1,11 @@
 @extends('layouts.admin')
 @section('title','Kelola Akun')
 @section('page-title','Kelola Akun')
-@section('sidebar-nav')
-<a href="{{ route('admin.dashboard') }}"><i data-feather="grid"></i> Dashboard</a>
-<a href="{{ route('admin.rooms.index') }}"><i data-feather="home"></i> Status Kamar</a>
-<a href="{{ route('admin.users.index') }}" class="active"><i data-feather="users"></i> Kelola Akun</a>
-<a href="{{ route('admin.attendance.index') }}"><i data-feather="calendar"></i> Absensi</a>
-<a href="{{ route('admin.timer.index') }}"><i data-feather="clock"></i> Timer Tugas</a>
-<a href="{{ route('admin.history.index') }}"><i data-feather="activity"></i> Log Aktivitas</a>
-@endsection
+
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/user_admin.css') }}">
+@endpush
+
 @if($errors->any())
 <div class="alert alert-error">
     <ul style="margin:0;padding-left:16px">
@@ -18,6 +15,7 @@
     </ul>
 </div>
 @endif
+
 @section('content')
 <div class="card">
     <div class="card-header">
@@ -27,7 +25,7 @@
     <div style="overflow-x:auto">
     <table class="tbl">
         <thead><tr>
-            <th>Nama</th><th>Username</th><th>Role</th><th>Shift</th><th>Status</th><th>Aksi</th>
+            <th>Nama</th><th>Username</th><th>Role</th><th>Status</th><th>Aksi</th>
         </tr></thead>
         <tbody>
         @foreach($users as $u)
@@ -35,11 +33,10 @@
             <td><strong>{{ $u->name }}</strong></td>
             <td><code style="background:#f5f5f5;padding:2px 6px;border-radius:4px">{{ $u->username }}</code></td>
             <td><span class="badge badge-red">{{ ucfirst($u->role) }}</span></td>
-            <td>{{ ucfirst($u->shift) }}</td>
             <td><span class="badge {{ $u->is_active ? 'badge-green' : 'badge-gray' }}">{{ $u->is_active ? 'Aktif' : 'Nonaktif' }}</span></td>
             <td style="display:flex;gap:6px;flex-wrap:wrap">
                 <button class="btn-sm btn-secondary"
-                    onclick="editUser({{ $u->id }},'{{ addslashes($u->name) }}','{{ $u->username }}','{{ $u->role }}','{{ $u->shift }}')">Edit</button>
+                    onclick="editUser({{ $u->id }},'{{ addslashes($u->name) }}','{{ $u->username }}','{{ $u->role }}')" >Edit</button>
                 @if($u->id !== auth()->id())
                 <form method="POST" action="{{ route('admin.users.toggle', $u) }}">
                     @csrf @method('PATCH')
@@ -78,10 +75,9 @@
             <div class="grid-2">
                 <div class="form-group"><label class="form-label">Role</label>
                     <select name="role" class="form-control">
-                        <option value="ra">Room Attendant</option>
-                        <option value="supervisor">Supervisor</option>
-                        <option value="manager">Manager</option>
-                        <option value="admin">Admin</option>
+                        @foreach($roles as $r)
+                        <option value="{{ $r }}">{{ ucfirst($r) }}</option>
+                        @endforeach
                     </select></div>
             </div>
             <div class="modal-footer">
@@ -109,17 +105,11 @@
             <div class="grid-2">
                 <div class="form-group"><label class="form-label">Role</label>
                     <select name="role" id="editRole" class="form-control">
-                        <option value="ra">Room Attendant</option>
-                        <option value="supervisor">Supervisor</option>
-                        <option value="manager">Manager</option>
-                        <option value="admin">Admin</option>
+                        @foreach($roles as $r)
+                        <option value="{{ $r }}">{{ ucfirst($r) }}</option>
+                        @endforeach
                     </select></div>
-                <div class="form-group"><label class="form-label">Shift</label>
-                    <select name="shift" id="editShift" class="form-control">
-                        <option value="pagi">Pagi</option>
-                        <option value="siang">Siang</option>
-                        <option value="malam">Malam</option>
-                    </select></div>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-sm btn-secondary" onclick="document.getElementById('modalEdit').classList.remove('open')">Batal</button>
@@ -132,12 +122,11 @@
 
 @push('scripts')
 <script>
-function editUser(id, name, username, role, shift) {
+function editUser(id, name, username, role) {
     document.getElementById('formEdit').action = '/admin/users/' + id;
     document.getElementById('editName').value = name;
     document.getElementById('editUsername').value = username;
     document.getElementById('editRole').value = role;
-    document.getElementById('editShift').value = shift;
     document.getElementById('modalEdit').classList.add('open');
 }
 document.querySelectorAll('.modal-bg').forEach(m => {
