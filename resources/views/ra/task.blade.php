@@ -1,4 +1,4 @@
-@extends('layouts.ra')
+@extends('layouts.topbar')
 @section('title', 'Kamar Saya')
 
 @push('styles')

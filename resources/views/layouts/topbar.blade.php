@@ -7,7 +7,7 @@
     <title>@yield('title', 'HK Perhotelan')</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/ra/dashboard_ra.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/manager/manager.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/ra/absensi_ra.css') }}">
     @stack('styles')
 </head>
 <body>
@@ -21,7 +21,7 @@
         </div>
         <div>
             <div class="topbar-title">HK Perhotelan</div>
-            <div class="topbar-subtitle">Manager Panel</div>
+            <div class="topbar-subtitle">Room Attendant Panel</div>
         </div>
     </div>
     <div class="topbar-right">
@@ -38,9 +38,6 @@
 
 {{-- CONTENT --}}
 <div class="main-wrap">
-    @if(session('success'))
-        <div class="alert alert-success">✅ {{ session('success') }}</div>
-    @endif
     @if(session('error'))
         <div class="alert alert-error">⚠️ {{ session('error') }}</div>
     @endif

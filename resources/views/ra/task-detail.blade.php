@@ -1,125 +1,8 @@
-@extends('layouts.ra')
+@extends('layouts.topbar')
 @section('title', 'Detail Tugas')
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/ra/room-checklist.css') }}">
-<style>
-/* ── TIMER ─────────────────────────────────────────────── */
-.timer-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #fff;
-    border-radius: 14px;
-    padding: 14px 20px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 10px rgba(0,0,0,.06);
-    gap: 12px;
-}
-.timer-label {
-    font-size: 12px;
-    color: #888;
-    font-weight: 600;
-    letter-spacing: .5px;
-    text-transform: uppercase;
-}
-.timer-display {
-    font-size: 32px;
-    font-weight: 800;
-    color: #1a1a1a;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 1px;
-    transition: color .3s;
-}
-.timer-display.warning { color: #f57f17; }
-.timer-display.danger  { color: #e53935; }
-.timer-track {
-    flex: 1;
-    height: 6px;
-    background: #f0f0f0;
-    border-radius: 6px;
-    overflow: hidden;
-    min-width: 60px;
-}
-.timer-fill {
-    height: 100%;
-    border-radius: 6px;
-    background: #43a047;
-    transition: width .5s linear, background .5s;
-}
-.timer-fill.warning { background: #f57f17; }
-.timer-fill.danger  { background: #e53935; }
-.timer-overtime {
-    font-size: 11px;
-    font-weight: 700;
-    color: #e53935;
-    background: #fde8e8;
-    padding: 3px 10px;
-    border-radius: 20px;
-    display: none;
-}
-.timer-overtime.show { display: inline-block; }
-
-/* ── START SCREEN ───────────────────────────────────────── */
-.start-screen {
-    background: #fff;
-    border-radius: 18px;
-    padding: 40px 28px;
-    text-align: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,.06);
-    margin-bottom: 16px;
-}
-.start-screen h3 {
-    font-size: 20px;
-    font-weight: 800;
-    color: #1a1a1a;
-    margin-bottom: 8px;
-}
-.start-screen p {
-    font-size: 13px;
-    color: #888;
-    margin-bottom: 8px;
-}
-.start-meta {
-    display: inline-flex;
-    gap: 20px;
-    background: #f9f9f9;
-    border-radius: 12px;
-    padding: 12px 24px;
-    margin: 16px 0 24px;
-}
-.start-meta-item {
-    text-align: center;
-}
-.start-meta-val {
-    font-size: 22px;
-    font-weight: 800;
-    color: #7A0200;
-}
-.start-meta-key {
-    font-size: 11px;
-    color: #888;
-    margin-top: 2px;
-}
-.btn-start {
-    background: #7A0200;
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    padding: 14px 40px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    width: 100%;
-    max-width: 320px;
-    transition: background .2s, transform .15s;
-    font-family: inherit;
-}
-.btn-start:hover {
-    background: #5a0100;
-    transform: translateY(-1px);
-}
-</style>
 @endpush
 
 @section('content')
@@ -145,13 +28,23 @@
     @endif
 
     {{-- ══════════════════════════════════════════
-         KONDISI 1: PENDING — belum dimulai
+         KONDISI 1: PENDING / RETURNED — belum / perlu diulang
          ══════════════════════════════════════════ --}}
-    @if($task->status === 'pending')
+    @if(in_array($task->status, ['pending', 'returned_to_ra']))
 
         <div class="start-screen">
+            @if($task->status === 'returned_to_ra')
+            <h3>Perbaiki & Mulai Ulang</h3>
+            <p>Supervisor mengembalikan tugas ini. Periksa catatan di bawah lalu mulai ulang.</p>
+            @if($task->supervisor_note)
+            <div style="background:#fde8e8;border-radius:10px;padding:12px 16px;margin:12px 0;font-size:13px;color:#c62828;text-align:left">
+                <strong>Catatan Supervisor:</strong> {{ $task->supervisor_note }}
+            </div>
+            @endif
+            @else
             <h3>Siap Mulai?</h3>
             <p>Tugas akan dimulai dan timer langsung berjalan.</p>
+            @endif
 
             <div class="start-meta">
                 <div class="start-meta-item">
@@ -241,7 +134,7 @@
 @push('scripts')
 <script>
 // ── TIMER ────────────────────────────────────────────────────
-@if($task->status !== 'pending')
+@if($task->status === 'in_progress')
 (function() {
     const startedAt  = new Date("{{ $task->started_at->toIso8601String() }}");
     const timeLimitS = {{ $task->time_limit }} * 60; // konversi ke detik
@@ -302,7 +195,7 @@
 @endif
 
 // ── CHECKLIST ────────────────────────────────────────────────
-@if($task->status !== 'pending')
+@if(in_array($task->status, ['in_progress', 'returned_to_ra']))
 const data = {
     bedroom: {
         label: 'Bedroom',

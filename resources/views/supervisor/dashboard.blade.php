@@ -1,4 +1,4 @@
-@extends('layouts.supervisor')
+@extends('layouts.topbar')
 @section('title', 'Dashboard Supervisor')
 
 @section('content')

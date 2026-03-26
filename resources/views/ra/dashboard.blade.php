@@ -1,4 +1,4 @@
-@extends('layouts.ra')
+@extends('layouts.topbar')
 @section('title', 'Dashboard')
 
 @section('content')

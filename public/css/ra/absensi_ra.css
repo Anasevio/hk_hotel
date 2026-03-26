@@ -6,12 +6,16 @@
 
 /* ── Header absensi ──────────────────────────────────────── */
 .abs-header {
-    background: linear-gradient(135deg, var(--primary-dark), var(--primary-pink));
+    background: linear-gradient(
+        135deg,
+        var(--primary-dark),
+        var(--primary-pink)
+    );
     border-radius: 16px;
     padding: 20px 24px;
     text-align: center;
     margin-bottom: 20px;
-    box-shadow: 0 4px 16px rgba(168,85,120,.4);
+    box-shadow: 0 4px 16px rgba(168, 85, 120, 0.4);
 }
 .abs-header-title {
     color: #fff;
@@ -19,7 +23,7 @@
     font-weight: 700;
 }
 .abs-header-sub {
-    color: rgba(255,255,255,.75);
+    color: rgba(255, 255, 255, 0.75);
     font-size: 13px;
     margin-top: 4px;
 }
@@ -32,7 +36,9 @@
     align-items: start;
 }
 @media (max-width: 640px) {
-    .abs-layout { grid-template-columns: 1fr; }
+    .abs-layout {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ── Info user di dalam card ─────────────────────────────── */
@@ -55,8 +61,16 @@
     font-weight: 700;
     flex-shrink: 0;
 }
-.abs-user-name { font-weight: 700; font-size: 14px; color: var(--text-main); }
-.abs-user-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.abs-user-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-main);
+}
+.abs-user-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
 
 .abs-divider {
     border: none;
@@ -87,18 +101,82 @@
     font-weight: 700;
     cursor: pointer;
     font-family: inherit;
-    transition: all .2s;
+    transition: all 0.2s;
     background: #fff;
 }
-.status-hadir { border: 2px solid #2e7d32; color: #2e7d32; }
-.status-hadir.is-active { background: #2e7d32; color: #fff; }
-.status-izin  { border: 2px solid #f57f17; color: #f57f17; }
-.status-izin.is-active  { background: #f57f17; color: #fff; }
-.status-sakit { border: 2px solid #1565c0; color: #1565c0; }
-.status-sakit.is-active { background: #1565c0; color: #fff; }
+.status-hadir {
+    border: 2px solid #2e7d32;
+    color: #2e7d32;
+}
+.status-hadir.is-active {
+    background: #2e7d32;
+    color: #fff;
+}
+.status-izin {
+    border: 2px solid #f57f17;
+    color: #f57f17;
+}
+.status-izin.is-active {
+    background: #f57f17;
+    color: #fff;
+}
+.status-sakit {
+    border: 2px solid #1565c0;
+    color: #1565c0;
+}
+.status-sakit.is-active {
+    background: #1565c0;
+    color: #fff;
+}
 
 /* ── Keterangan textarea ─────────────────────────────────── */
-.abs-keterangan { margin-bottom: 14px; }
+/* Styling Label */
+.abs-form-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+/* Styling Textarea (form-control) */
+.form-control {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 8px; /* Sudut lebih lembut */
+    transition:
+        border-color 0.15s ease-in-out,
+        box-shadow 0.15s ease-in-out;
+    resize: vertical; /* User hanya bisa tarik ke bawah, bukan ke samping */
+    min-height: 80px;
+}
+
+/* Efek saat diklik (Focus) */
+.form-control:focus {
+    color: #495057;
+    background-color: #fff;
+    border-color: #80bdff; /* Warna biru khas Laravel/Bootstrap */
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Jarak antar form */
+.abs-keterangan {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+/* Placeholder warna abu-abu muda */
+.form-control::placeholder {
+    color: #adb5bd;
+    opacity: 1;
+}
 
 /* ── Tombol absen ────────────────────────────────────────── */
 .btn-absen {
@@ -109,7 +187,7 @@
     font-weight: 700;
     border: none;
     font-family: inherit;
-    transition: all .2s;
+    transition: all 0.2s;
     cursor: pointer;
 }
 .btn-absen--disabled {
@@ -118,10 +196,14 @@
     cursor: not-allowed;
 }
 .btn-absen--active {
-    background: linear-gradient(135deg, var(--primary-dark), var(--primary-pink));
+    background: linear-gradient(
+        135deg,
+        var(--primary-dark),
+        var(--primary-pink)
+    );
     color: #fff;
     cursor: pointer;
-    box-shadow: 0 3px 10px rgba(168,85,120,.3);
+    box-shadow: 0 3px 10px rgba(168, 85, 120, 0.3);
 }
 
 /* ── Info box (hadir / selesai) ──────────────────────────── */
@@ -140,15 +222,24 @@
     color: #2e7d32;
     margin-bottom: 6px;
 }
-.abs-info-val { font-size: 13px; color: #333; }
-.abs-info-rows { display: flex; flex-direction: column; gap: 4px; }
+.abs-info-val {
+    font-size: 13px;
+    color: #333;
+}
+.abs-info-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
 .abs-info-row {
     display: flex;
     justify-content: space-between;
     font-size: 13px;
     color: #444;
 }
-.abs-info-row span { color: #888; }
+.abs-info-row span {
+    color: #888;
+}
 
 /* ── Stats grid ──────────────────────────────────────────── */
 .abs-stats {
@@ -164,17 +255,32 @@
     text-align: center;
     border: 1px solid var(--divider);
 }
-.abs-stat-icon { font-size: 20px; margin-bottom: 5px; }
+.abs-stat-icon {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
 .abs-stat-val {
     font-size: 20px;
     font-weight: 800;
     line-height: 1;
 }
-.abs-stat-val--hadir { color: #2e7d32; }
-.abs-stat-val--izin  { color: #f57f17; }
-.abs-stat-val--sakit { color: #1565c0; }
-.abs-stat-val--alfa  { color: #c62828; }
-.abs-stat-label { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+.abs-stat-val--hadir {
+    color: #2e7d32;
+}
+.abs-stat-val--izin {
+    color: #f57f17;
+}
+.abs-stat-val--sakit {
+    color: #1565c0;
+}
+.abs-stat-val--alfa {
+    color: #c62828;
+}
+.abs-stat-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 3px;
+}
 
 /* ── Riwayat title ───────────────────────────────────────── */
 .abs-riwayat-title {
@@ -198,7 +304,7 @@
 .riwayat-icon {
     width: 36px;
     height: 36px;
-    background: rgba(255,255,255,.2);
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -206,13 +312,45 @@
     font-size: 16px;
     flex-shrink: 0;
 }
-.riwayat-info { flex: 1; }
-.riwayat-date  { font-size: 11px; opacity: .8; }
-.riwayat-label { font-size: 13px; font-weight: 600; }
-.riwayat-badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; }
-.rb-masuk { background: var(--white); color: var(--primary-pink); }
-.rb-izin  { background: var(--accent-gold); color: #fff; }
-.rb-sakit { background: #1e88e5; color: #fff; }
+.riwayat-info {
+    flex: 1;
+}
+.riwayat-date {
+    font-size: 11px;
+    opacity: 0.8;
+}
+.riwayat-label {
+    font-size: 13px;
+    font-weight: 600;
+}
+.riwayat-badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.rb-masuk {
+    background: var(--white);
+    color: var(--primary-pink);
+}
+.rb-izin {
+    background: var(--accent-gold);
+    color: #fff;
+}
+.rb-sakit {
+    background: #1e88e5;
+    color: #fff;
+}
+
+.rb-alpa {
+    background: #e53935;
+    color: #fff;
+}
+
+.rb-terlambat {
+    background: #f57c00;
+    color: #fff;
+} 
 
 /* ── Empty state ─────────────────────────────────────────── */
 .abs-empty {
@@ -223,7 +361,24 @@
 }
 
 /* ── Alert ───────────────────────────────────────────────── */
-.alert          { padding: 12px 16px; border-radius: 10px; font-size: 13px; margin-bottom: 14px; }
-.alert-success  { background: #e8f8ef; border: 1px solid #a8ddb8; color: #1E7A40; }
-.alert-error    { background: #fdf0ef; border: 1px solid #f5b8b4; color: #922B21; }
-.alert-warn     { background: #fff8e1; border: 1px solid #ffe082; color: #856404; }
+.alert {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 14px;
+}
+.alert-success {
+    background: #e8f8ef;
+    border: 1px solid #a8ddb8;
+    color: #1e7a40;
+}
+.alert-error {
+    background: #fdf0ef;
+    border: 1px solid #f5b8b4;
+    color: #922b21;
+}
+.alert-warn {
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    color: #856404;
+}

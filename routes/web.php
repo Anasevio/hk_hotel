@@ -8,17 +8,15 @@ use App\Http\Controllers\Admin\AttendanceController as AdminAttendance;
 use App\Http\Controllers\Admin\TimerSettingController;
 use App\Http\Controllers\Admin\TaskController as AdminTask;
 use App\Http\Controllers\Supervisor\DashboardController as SupervisorDashboard;
-use App\Http\Controllers\Supervisor\AttendanceController as SupervisorAttendance;
 use App\Http\Controllers\Supervisor\HistoryController as HistoryController;
 use App\Http\Controllers\Supervisor\TaskController as SupervisorTask;
 use App\Http\Controllers\Supervisor\SpecialCaseController;
 use App\Http\Controllers\Manager\DashboardController as ManagerDashboard;
-use App\Http\Controllers\Manager\AttendanceController as ManagerAttendance;
 use App\Http\Controllers\Manager\InspectionController;
 use App\Http\Controllers\Ra\DashboardController as RaDashboard;
 use App\Http\Controllers\Ra\TaskController as RaTask;
-use App\Http\Controllers\Ra\AttendanceController as RaAttendance;
 use App\Http\Controllers\Shared\TaskController as RoomController;
+use App\Http\Controllers\Shared\AttendanceController as AttendanceController;
 
 // Root → login
 Route::get('/', fn() => redirect()->route('login'));
@@ -62,9 +60,12 @@ Route::prefix('supervisor')->name('supervisor.')->middleware(['auth','role:super
     Route::post('/special-cases',              [SpecialCaseController::class,'store'])->name('special-cases.store');
     Route::put('/special-cases/{case}',        [SpecialCaseController::class,'update'])->name('special-cases.update');
     Route::post('/special-cases/{case}/resolve',[SpecialCaseController::class,'resolve'])->name('special-cases.resolve');
-    route::get('/attendance',                  [SupervisorAttendance::class, 'index'])->name('attendance.index');  
-    Route::post('/attendance/checkin',         [SupervisorAttendance::class, 'checkIn'])->name('attendance.checkin');
-    Route::post('/attendance/checkout',        [SupervisorAttendance::class, 'checkOut'])->name('attendance.checkout');
+    Route::get('/attendance',             [AttendanceController::class, 'index'])->name('attendance.index');
+    Route::post('/attendance/check-in',   [AttendanceController::class, 'checkIn'])->name('attendance.checkin');
+    Route::post('/attendance/izin',       [AttendanceController::class, 'izin'])->name('attendance.izin');
+    Route::post('/attendance/sakit',      [AttendanceController::class, 'sakit'])->name('attendance.sakit');
+    Route::post('/attendance/alpa',       [AttendanceController::class, 'alpa'])->name('attendance.alpa');
+    Route::post('/attendance/checkout',   [AttendanceController::class, 'checkOut'])->name('attendance.checkout');
     Route::get('/history',                     [HistoryController::class,   'index'])->name('history.index');
 });
 
@@ -76,19 +77,24 @@ Route::prefix('manager')->name('manager.')->middleware(['auth','role:manager'])-
     Route::post('/inspections/{task}/approve', [InspectionController::class,'approve'])->name('inspections.approve');
     Route::post('/inspections/{task}/return',  [InspectionController::class,'returnToSupervisor'])->name('inspections.return');
     Route::get('/rooms',                       [RoomController::class,    'index'])->name('rooms.index');
-    Route::get('/attendance',           [ManagerAttendance::class, 'index'])->name('attendance.index');
-    Route::post('/attendance/checkin',  [ManagerAttendance::class, 'checkIn'])->name('attendance.checkin');
-    Route::post('/attendance/checkout', [ManagerAttendance::class, 'checkOut'])->name('attendance.checkout');
- 
+    Route::get('/attendance',                  [AttendanceController::class, 'index'])->name('attendance.index');
+    Route::post('/attendance/check-in',        [AttendanceController::class, 'checkIn'])->name('attendance.checkin');
+    Route::post('/attendance/izin',            [AttendanceController::class, 'izin'])->name('attendance.izin');
+    Route::post('/attendance/sakit',           [AttendanceController::class, 'sakit'])->name('attendance.sakit');
+    Route::post('/attendance/alpa',            [AttendanceController::class, 'alpa'])->name('attendance.alpa');
+    Route::post('/attendance/checkout',        [AttendanceController::class, 'checkOut'])->name('attendance.checkout');
     Route::get('/history',                     [HistoryController::class, 'index'])->name('history.index');
 });
 
 // ── ROOM ATTENDANT ────────────────────────────────────────────────
 Route::prefix('ra')->name('ra.')->middleware(['auth','role:ra'])->group(function () {
     Route::get('/dashboard',              [RaDashboard::class,  'index'])->name('dashboard');
-    Route::get('/attendance',             [RaAttendance::class, 'index'])->name('attendance.index');
-    Route::post('/attendance/check-in',   [RaAttendance::class, 'checkIn'])->name('attendance.checkin');
-    Route::post('/attendance/check-out',  [RaAttendance::class, 'checkOut'])->name('attendance.checkout');
+    Route::get('/attendance',             [AttendanceController::class, 'index'])->name('attendance.index');
+    Route::post('/attendance/check-in',   [AttendanceController::class, 'checkIn'])->name('attendance.checkin');
+    Route::post('/attendance/izin',       [AttendanceController::class, 'izin'])->name('attendance.izin');
+    Route::post('/attendance/sakit',      [AttendanceController::class, 'sakit'])->name('attendance.sakit');
+    Route::post('/attendance/alpa',       [AttendanceController::class, 'alpa'])->name('attendance.alpa');
+    Route::post('/attendance/checkout',   [AttendanceController::class, 'checkOut'])->name('attendance.checkout');
     Route::get('/rooms',                  [RoomController::class,'raIndex'])->name('rooms.index');
     Route::get('/rooms/{room}',           [RoomController::class,'raShow'])->name('rooms.show');
     Route::get('/tasks/{task}',           [RaTask::class,        'show'])->name('tasks.show');
