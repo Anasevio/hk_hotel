@@ -104,4 +104,13 @@ class Task extends Model
         return $this->assigned_to === $user->id
             && $this->status === 'in_progress';
     }
+        public function supervisor()
+    {
+        return $this->belongsTo(User::class, 'supervisor_id');
+    }
+
+    public function manager()
+    {
+        return $this->belongsTo(User::class, 'manager_id');
+    }
 }

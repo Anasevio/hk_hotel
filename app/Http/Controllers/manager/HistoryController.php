@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Supervisor;
+namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Models\Task;
@@ -10,8 +10,9 @@ class HistoryController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Task::with(['room','assignedUser'])
-            ->where('supervisor_id', auth()->id()) // ✅ pakai ini
+        $query = Task::with(['room','assignedUser','assignedByUser'])
+            ->where('manager_id', auth()->id()) // ✅ FIX UTAMA
+            ->where('status', 'completed')
             ->where('updated_at', '>=', now()->subDays(30));
 
         if ($request->filled('status')) {
@@ -30,6 +31,6 @@ class HistoryController extends Controller
 
         $history = $query->latest()->paginate(10)->withQueryString();
 
-        return view('supervisor.history', compact('history'));
+        return view('manager.history', compact('history'));
     }
 }

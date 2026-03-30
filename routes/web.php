@@ -3,17 +3,20 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
+use App\Http\Controllers\Admin\HistoryController as AdminHistoryController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendance;
 use App\Http\Controllers\Admin\TimerSettingController;
 use App\Http\Controllers\Admin\TaskController as AdminTask;
 use App\Http\Controllers\Supervisor\DashboardController as SupervisorDashboard;
-use App\Http\Controllers\Supervisor\HistoryController as HistoryController;
+use App\Http\Controllers\Supervisor\HistoryController as SupervisorHistoryController;
 use App\Http\Controllers\Supervisor\TaskController as SupervisorTask;
 use App\Http\Controllers\Supervisor\SpecialCaseController;
+use App\Http\Controllers\Manager\HistoryController as ManagerHistoryController;
 use App\Http\Controllers\Manager\DashboardController as ManagerDashboard;
 use App\Http\Controllers\Manager\InspectionController;
 use App\Http\Controllers\Ra\DashboardController as RaDashboard;
+use App\Http\Controllers\Ra\HistoryController;
 use App\Http\Controllers\Ra\TaskController as RaTask;
 use App\Http\Controllers\Shared\TaskController as RoomController;
 use App\Http\Controllers\Shared\AttendanceController as AttendanceController;
@@ -43,7 +46,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth','role:admin'])->group
     Route::get('/rooms',                 [RoomController::class,       'index'])->name('rooms.index');
     Route::put('/rooms/{room}/status',   [RoomController::class,       'updateStatus'])->name('rooms.status');
     Route::get('/rooms/logs',            [RoomController::class,       'logs'])->name('rooms.logs');
-    Route::get('/history',               [HistoryController::class,    'index'])->name('history.index');
+    Route::get('/history',               [AdminHistoryController::class,    'index'])->name('history.index');
 });
 
 // ── SUPERVISOR ────────────────────────────────────────────────────
@@ -66,7 +69,7 @@ Route::prefix('supervisor')->name('supervisor.')->middleware(['auth','role:super
     Route::post('/attendance/sakit',      [AttendanceController::class, 'sakit'])->name('attendance.sakit');
     Route::post('/attendance/alpa',       [AttendanceController::class, 'alpa'])->name('attendance.alpa');
     Route::post('/attendance/checkout',   [AttendanceController::class, 'checkOut'])->name('attendance.checkout');
-    Route::get('/history',                     [HistoryController::class,   'index'])->name('history.index');
+    Route::get('/history',                [SupervisorHistoryController::class, 'index'])->name('history.index');
 });
 
 // ── MANAGER ───────────────────────────────────────────────────────
@@ -83,7 +86,7 @@ Route::prefix('manager')->name('manager.')->middleware(['auth','role:manager'])-
     Route::post('/attendance/sakit',           [AttendanceController::class, 'sakit'])->name('attendance.sakit');
     Route::post('/attendance/alpa',            [AttendanceController::class, 'alpa'])->name('attendance.alpa');
     Route::post('/attendance/checkout',        [AttendanceController::class, 'checkOut'])->name('attendance.checkout');
-    Route::get('/history',                     [HistoryController::class, 'index'])->name('history.index');
+    Route::get('/history',                     [ManagerHistoryController::class, 'index'])->name('history.index');
 });
 
 // ── ROOM ATTENDANT ────────────────────────────────────────────────
@@ -101,5 +104,5 @@ Route::prefix('ra')->name('ra.')->middleware(['auth','role:ra'])->group(function
     Route::post('/tasks/{task}/start',    [RaTask::class,        'start'])->name('tasks.start');
     Route::post('/tasks/{task}/checklist',[RaTask::class,        'updateChecklist'])->name('tasks.checklist');
     Route::post('/tasks/{task}/submit',   [RaTask::class,        'submit'])->name('tasks.submit');
-    Route::get('/history',                [HistoryController::class,'index'])->name('history.index');
+    Route::get('/history',                [HistoryController::class, 'index'])->name('history.index');
 });
