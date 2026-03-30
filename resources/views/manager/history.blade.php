@@ -57,7 +57,7 @@
                     <thead>
                         <tr>
                             <th>Nama RA</th>
-                            <th>Admin</th>
+                            <th>SuperVisor</th>
                             <th>Kamar</th>
                             <th>Status</th>
                         </tr>
