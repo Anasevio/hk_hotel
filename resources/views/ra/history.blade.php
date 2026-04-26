@@ -68,10 +68,11 @@
     <table>
                     <thead>
                         <tr>
-                            <th>Target</th>
+                            <th>Tanggal</th>
                             <th>Kamar</th>
                             <th>Checklist</th>
                             <th>Status</th>
+                            <th>Durasi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -98,6 +99,17 @@
                     {{ $task->status_label }}
                 </span>
             </td>
+            <td>
+    @php
+        $durasi = ($task->started_at && $task->completed_at)
+            ? \Carbon\Carbon::parse($task->started_at)->diffInMinutes($task->completed_at)
+            : null;
+    @endphp
+
+    <span class="durasi">
+        ⏱ {{ $durasi ?? '-' }} menit
+    </span>
+</td>
         </tr>
     @empty
         <tr>

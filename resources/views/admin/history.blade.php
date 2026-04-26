@@ -36,7 +36,7 @@
     <p>Lihat riwayat aktivitas dan tugas Murid</p>
   </div>
 
-  <<a href="{{ route('admin.dashboard') }}" class="btn-back">
+  <a href="{{ route('admin.dashboard') }}" class="btn-back">
   ← Kembali
 </a>
 
@@ -115,8 +115,17 @@
 <!-- 🔥 TAMBAHAN INFO (SPV & Manager) -->
 <tr>
     <td colspan="5" style="font-size:12px; color:gray;">
-        SPV: {{ $task->supervisor->name ?? '-' }} |
-        Manager: {{ $task->manager->name ?? '-' }}
+
+        @php
+            $durasi = ($task->started_at && $task->completed_at)
+                ? \Carbon\Carbon::parse($task->started_at)->diffInMinutes($task->completed_at)
+                : null;
+        @endphp
+
+        ⏱ {{ $durasi ?? '-' }} menit 
+        | SPV: {{ $task->supervisor->name ?? '-' }} 
+        | Manager: {{ $task->manager->name ?? '-' }}
+
     </td>
 </tr>
 
