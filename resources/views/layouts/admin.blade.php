@@ -21,7 +21,7 @@
         <div class="sidebar-top">
             <button class="hamburger small sidebar-toggle">☰</button>
             <div class="side-logos">
-                <img src="{{ asset('images/Logo SIG.png') }}" onerror="this.style.display='none'" alt="">
+                <img src="{{ asset('images/Logo SIG W.png') }}" onerror="this.style.display='none'" alt="">
                 <img src="{{ asset('images/LOGO PH.png') }}" onerror="this.style.display='none'" alt="">
             </div>
         </div>

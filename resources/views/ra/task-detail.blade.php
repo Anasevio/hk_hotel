@@ -122,6 +122,8 @@
         <form method="POST" action="{{ route('ra.tasks.submit', $task->id) }}"
               id="submitForm" style="display:none">
             @csrf
+            <input type="hidden" name="checklists" id="checklistsInput">
+
             <button type="submit" class="btn-submit">✅ Submit ke Supervisor</button>
         </form>
 
@@ -602,6 +604,10 @@ document.getElementById('btnPrev').addEventListener('click', () => {
 });
 
 render();
+
+document.getElementById('submitForm').addEventListener('submit', function () {
+    document.getElementById('checklistsInput').value = JSON.stringify(checked);
+});
 
 @endif
 </script>

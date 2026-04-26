@@ -4,28 +4,34 @@ namespace App\Http\Controllers\Ra;
 
 use App\Http\Controllers\Controller;
 use App\Models\Task;
+use App\Models\TaskChecklist;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    // ── Tampilkan halaman detail task ─────────────────────────────
+    // ── Detail task ───────────────────────────────────────────────
     public function show(Task $task)
     {
         abort_if($task->assigned_to !== auth()->id(), 403);
 
-        $task->load(['room', 'assignedByUser', 'checklists']);
+        $task->load([
+            'room',
+            'assignedByUser',
+            'checklists',
+            'preparationChecklists',
+            'cleaningChecklists'
+        ]);
 
         return view('ra.task-detail', compact('task'));
     }
 
-    // ── RA mulai mengerjakan tugas ────────────────────────────────
+    // ── Start task ────────────────────────────────────────────────
     public function start(Task $task)
     {
         abort_if($task->assigned_to !== auth()->id(), 403);
 
         if (!in_array($task->status, ['pending', 'returned_to_ra'])) {
-            return redirect()->route('ra.tasks.show', $task->id)
-                ->with('error', "Tugas tidak bisa dimulai — status saat ini: {$task->status_label}.");
+            return back()->with('error', "Tugas tidak bisa dimulai — status: {$task->status_label}");
         }
 
         $task->update([
@@ -33,7 +39,7 @@ class TaskController extends Controller
             'started_at' => $task->started_at ?? now(),
         ]);
 
-        // Kamar → vacant_clean saat RA mulai mengerjakan
+        // Update status kamar
         $task->room->changeStatus(
             'vacant_clean',
             auth()->user(),
@@ -41,31 +47,75 @@ class TaskController extends Controller
             $task
         );
 
-        return back()->with('success', 'Tugas dimulai! Timer berjalan.');
+        return back()->with('success', 'Tugas dimulai.');
     }
 
-    // ── RA submit task ke Supervisor ──────────────────────────────
-    // Checklist dikelola di frontend (JS), validasi hanya cek status task.
-    // Tombol submit hanya muncul setelah semua tab checklist selesai dicentang.
-    public function submit(Request $request, Task $task)
+    // ── Update checklist (INI YANG SEBELUMNYA KAMU BELUM ADA) ─────
+    public function updateChecklist(Request $request, Task $task)
     {
         abort_if($task->assigned_to !== auth()->id(), 403);
 
-        if ($task->status !== 'in_progress') {
-            return redirect()->route('ra.tasks.show', $task->id)
-                ->with('error', "Tugas tidak bisa disubmit — status saat ini: {$task->status_label}. Pastikan kamu sudah menekan Mulai Tugas.");
+        foreach ($task->checklists as $item) {
+            $item->update([
+                'is_checked' => isset($request->checklists[$item->id])
+            ]);
         }
 
+        // Hitung ulang progress
+        $prepTotal = $task->preparationChecklists()->count();
+        $prepDone  = $task->preparationChecklists()->where('is_checked', true)->count();
+
+        $cleanTotal = $task->cleaningChecklists()->count();
+        $cleanDone  = $task->cleaningChecklists()->where('is_checked', true)->count();
+
         $task->update([
-            'status'                => 'pending_supervisor',
-            'submitted_at'          => now(),
-            'checklist1_progress'   => 100,
-            'checklist2_progress'   => 100,
+            'checklist1_progress' => $prepTotal ? round(($prepDone / $prepTotal) * 100) : 0,
+            'checklist2_progress' => $cleanTotal ? round(($cleanDone / $cleanTotal) * 100) : 0,
         ]);
 
-        // Status kamar tetap vacant_clean (sudah diset saat RA mulai)
-
-        return redirect()->route('ra.rooms.index')
-            ->with('success', "Kamar {$task->room->room_number} berhasil disubmit ke Supervisor! ✓");
+        return back()->with('success', 'Checklist diperbarui.');
     }
+
+    // ── Submit ke Supervisor ──────────────────────────────────────
+public function submit(Request $request, Task $task)
+{
+    abort_if($task->assigned_to !== auth()->id(), 403);
+
+    if ($task->status !== 'in_progress') {
+        return back()->with('error', "Tugas belum dimulai.");
+    }
+
+    // ambil data dari JS
+    $data = json_decode($request->checklists, true);
+
+    if (!$data) {
+        return back()->with('error', 'Checklist tidak terbaca.');
+    }
+
+    // 🔥 SET SEMUA CHECKLIST JADI DONE
+    TaskChecklist::where('task_id', $task->id)
+        ->update([
+            'is_checked' => true,
+            'checked_at' => now()
+        ]);
+
+    // 🔥 HITUNG ULANG (biar SPV gak salah baca)
+    $prepTotal = $task->preparationChecklists()->count();
+    $cleanTotal = $task->cleaningChecklists()->count();
+
+    $task->update([
+        'status' => 'pending_supervisor',
+        'submitted_at' => now(),
+        'ra_notes' => $request->note,
+        'checklist1_progress' => $prepTotal ? 100 : 0,
+        'checklist2_progress' => $cleanTotal ? 100 : 0,
+    ]);
+
+    // 🔥 PENTING: reload relasi
+    $task->refresh();
+
+    return redirect()
+        ->route('ra.rooms.index')
+        ->with('success', "Kamar {$task->room->room_number} berhasil dikirim ke Supervisor.");
+}
 }

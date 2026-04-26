@@ -97,6 +97,34 @@ input {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
 }
 
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 999px;
+
+  background: linear-gradient(135deg, var(--primary-pink), var(--primary-dark));
+  color: var(--white);
+  border: none;
+
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  box-shadow: 0 10px 20px rgba(200, 80, 140, 0.25);
+  transition: all 0.25s ease;
+}
+
+.btn-back:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(200, 80, 140, 0.35);
+}
+
+.btn-back:active {
+  transform: scale(0.96);
+}
+
 /* PAGE LAYOUT */
 .container {
   padding: 30px;

@@ -16,13 +16,13 @@ class InspectionController extends Controller
     public function index(Request $request)
     {
         // 🔥 TASK MENUNGGU APPROVE MANAGER
-        $pendingTasks = Task::with(['room','assignedUser','assignedByUser'])
+        $pendingTasks = Task::with(['room','assignedUser','supervisor'])
             ->where('status', 'pending_manager')
             ->latest('supervisor_approved_at')
             ->paginate(10, ['*'], 'pending_page');
 
         // 🔍 HISTORY (SUDAH DI APPROVE MANAGER)
-        $completedTasksQuery = Task::with(['room','assignedUser','assignedByUser'])
+        $completedTasksQuery = Task::with(['room','assignedUser','supervisor'])
             ->where('manager_id', auth()->id())
             ->where('status', 'completed');
 
@@ -75,7 +75,7 @@ class InspectionController extends Controller
         $task->load([
             'room',
             'assignedUser',
-            'assignedByUser',
+            'supervisor',
             'preparationChecklists',
             'cleaningChecklists'
         ]);
@@ -108,9 +108,8 @@ class InspectionController extends Controller
         // kosongkan assigned
         $task->room->update(['assigned_to' => null]);
 
-        return back()->with('success',
-            "Kamar {$task->room->room_number} → Vacant Ready! ✓"
-        );
+        return redirect()->route('manager.inspections.index')
+        ->with('success', "Kamar {$task->room->room_number} → Vacant Ready! ✓");
     }
 
     /**

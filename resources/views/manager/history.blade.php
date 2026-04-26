@@ -12,6 +12,8 @@
 
     <div class="card">
         <div class="header">
+            <a href="{{ url()->previous() }}" class="btn-back">← Kembali</a>
+
             <h1>Riwayat Tugas</h1>
             <span class="badge">Terakhir 30 hari</span>
         </div>
@@ -70,9 +72,9 @@
         {{ $task->assignedUser->name ?? '-' }}
     </td>
 
-    <!-- Admin -->
+    <!-- Supervisor -->
     <td>
-        {{ $task->assignedByUser->name ?? '-' }}
+        {{ $task->supervisor->name ?? '-' }}
     </td>
 
     <!-- Kamar -->

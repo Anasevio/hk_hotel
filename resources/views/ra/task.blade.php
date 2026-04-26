@@ -21,14 +21,23 @@ $lblMap = ['vacant_dirty'=>'Vacant Dirty','vacant_clean'=>'Vacant Clean','vacant
 
 {{-- Header --}}
 <div class="page-header">
-    <div>
-        <div class="page-title">Kamar Saya</div>
-        <div class="page-subtitle">
-            {{ $rooms->count() }} kamar ditugaskan
-            · Klik <strong>Vacant Dirty</strong> untuk mulai membersihkan
+
+    <div class="header-left">
+        <a href="{{ route('ra.dashboard') }}" class="btn-back">←</a>
+
+        <div>
+            <div class="page-title">Kamar Saya</div>
+            <div class="page-subtitle">
+                {{ $rooms->count() }} kamar ditugaskan
+                · Klik <strong>Vacant Dirty</strong> untuk mulai membersihkan
+            </div>
         </div>
     </div>
-    <div class="shift-badge">🕐 Shift {{ ucfirst(auth()->user()->shift) }}</div>
+
+    <div class="shift-badge">
+        🕐 Shift {{ ucfirst(auth()->user()->shift) }}
+    </div>
+
 </div>
 
 {{-- Legend --}}

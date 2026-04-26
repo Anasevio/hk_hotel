@@ -29,10 +29,18 @@
 <div class="container">
 
   <!-- HEADER CARD -->
-  <div class="header-card">
+  <div class="header-card" style="display:flex; justify-content:space-between; align-items:center;">
+
+  <div>
     <h2>Riwayat Tugas Murid</h2>
     <p>Lihat riwayat aktivitas dan tugas Murid</p>
   </div>
+
+  <button onclick="history.back()" class="btn-back">
+    ← Kembali
+  </button>
+
+</div>
 
   <!-- FILTER -->
   <div class="filter-box">
