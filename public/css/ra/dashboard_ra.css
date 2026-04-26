@@ -198,6 +198,38 @@ body {
     box-shadow: 0 2px 8px rgba(168, 85, 120, 0.35);
     letter-spacing: 0.3px;
 }
+
+@media (max-width: 768px) {
+    .topbar {
+        flex-wrap: wrap;
+        align-items: flex-start;
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .topbar-right {
+        width: 100%;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .welcome-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .menu-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1080px) {
+    .menu-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 /* ── CARD ── */
 .card {
     background: var(--white);
