@@ -12,7 +12,7 @@
 
     <div class="card">
         <div class="header">
-            <a href="{{ url()->previous() }}" class="btn-back">← Kembali</a>
+            <a href="{{ auth()->user()->role == 'manager' ? route('manager.dashboard') : route('siswa.dashboard') }}" class="btn-back">← Kembali</a>
 
             <h1>Riwayat Tugas</h1>
             <span class="badge">Terakhir 30 hari</span>
@@ -25,22 +25,32 @@
                 <div class="filter-box">
                     <h3>Filter</h3>
 
-                    <label>Tanggal</label>
-                    <select>
-                        <option>Semua Tanggal</option>
-                    </select>
+                    <form method="GET">
+    <div class="filter-box">
+        <h3>Filter</h3>
 
-                    <label>Status</label>
-                    <select>
-                        <option>Semua Status</option>
-                    </select>
+        <label>Tanggal</label>
+        <input type="date" name="tanggal" value="{{ request('tanggal') }}">
 
-                    <label>Hasil</label>
-                    <select>
-                        <option>Semua Hasil</option>
-                    </select>
+        <label>Status</label>
+        <select name="status">
+            <option value="">Semua Status</option>
+            <option value="selesai" {{ request('status')=='selesai' ? 'selected' : '' }}>Selesai</option>
+            <option value="proses" {{ request('status')=='proses' ? 'selected' : '' }}>Proses</option>
+        </select>
 
-                    <input type="text" placeholder="Cari...">
+        <label>Hasil</label>
+        <select name="hasil">
+            <option value="">Semua Hasil</option>
+            <option value="100" {{ request('hasil')=='100' ? 'selected' : '' }}>100%</option>
+            <option value="50" {{ request('hasil')=='50' ? 'selected' : '' }}>50%</option>
+        </select>
+
+        <input type="text" name="search" placeholder="Cari kamar..." value="{{ request('search') }}">
+
+        <button type="submit" class="btn-search">🔍 Cari</button>
+    </div>
+</form>
                 </div>
 
                 <div class="warning-box">

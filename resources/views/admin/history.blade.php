@@ -36,24 +36,43 @@
     <p>Lihat riwayat aktivitas dan tugas Murid</p>
   </div>
 
-  <button onclick="history.back()" class="btn-back">
-    ← Kembali
-  </button>
+  <<a href="{{ route('admin.dashboard') }}" class="btn-back">
+  ← Kembali
+</a>
 
 </div>
 
   <!-- FILTER -->
-  <div class="filter-box">
-    <input type="date">
-    <select>
-      <option>Semua Murid</option>
+  <form method="GET" class="filter-box">
+
+    <input type="date" name="tanggal" value="{{ request('tanggal') }}">
+
+    <select name="user">
+        <option value="">Semua Murid</option>
+        @foreach($users as $user)
+            <option value="{{ $user->id }}" {{ request('user') == $user->id ? 'selected' : '' }}>
+                {{ $user->name }}
+            </option>
+        @endforeach
     </select>
-    <select>
-      <option>Semua Tugas</option>
+
+    <select name="status">
+        <option value="">Semua Tugas</option>
+        <option value="selesai" {{ request('status')=='selesai' ? 'selected' : '' }}>Selesai</option>
+        <option value="proses" {{ request('status')=='proses' ? 'selected' : '' }}>Proses</option>
     </select>
-    <button class="reset">Reset</button>
-    <button class="cari">Cari</button>
-  </div>
+
+    <!-- RESET -->
+    <a href="{{ route('admin.history.index') }}" class="reset">
+        Reset
+    </a>
+
+    <!-- CARI -->
+    <button type="submit" class="cari">
+        🔍 Cari
+    </button>
+
+</form>
 
   <!-- TABLE -->
   <div class="table-box">

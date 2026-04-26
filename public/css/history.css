@@ -245,6 +245,32 @@ tbody tr:hover {
     font-weight: 700;
 }
 
+.btn-search {
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(194, 113, 143, 0.45);
+    background: linear-gradient(135deg, var(--primary-pink), var(--primary-dark));
+    color: var(--white);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: all 0.25s ease;
+    box-shadow: 0 8px 18px rgba(194, 113, 143, 0.25);
+}
+
+.btn-search:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(194, 113, 143, 0.35);
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary-pink));
+}
+
+.btn-search:active {
+    transform: scale(0.97);
+}
+
 .btn-back {
     text-decoration: none;
     padding: 8px 14px;
