@@ -105,4 +105,5 @@ Route::prefix('ra')->name('ra.')->middleware(['auth','role:ra'])->group(function
     Route::post('/tasks/{task}/checklist',[RaTask::class,        'updateChecklist'])->name('tasks.checklist');
     Route::post('/tasks/{task}/submit',   [RaTask::class,        'submit'])->name('tasks.submit');
     Route::get('/history',                [HistoryController::class, 'index'])->name('history.index');
+    Route::post('/tasks/{task}/sop-done', [RaTask::class, 'sopDone'])->name('tasks.sopDone');
 });

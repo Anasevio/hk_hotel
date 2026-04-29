@@ -11,6 +11,7 @@ class Task extends Model
         'started_at', 'submitted_at', 'supervisor_approved_at', 'completed_at',
         'time_limit', 'supervisor_note', 'manager_note', 'ra_notes',
         'checklist1_progress', 'checklist2_progress',
+        'sop_viewed_at'
     ];
 
     protected $casts = [
@@ -18,6 +19,7 @@ class Task extends Model
         'submitted_at'           => 'datetime',
         'supervisor_approved_at' => 'datetime',
         'completed_at'           => 'datetime',
+        'sop_viewed_at' => 'datetime',
     ];
 
     // ── Relasi ────────────────────────────────────────────────────
@@ -55,6 +57,11 @@ class Task extends Model
             ->where('type', 'cleaning')
             ->orderBy('order');
     }
+
+    public function isSopDone(): bool
+{
+    return !is_null($this->sop_viewed_at);
+}
 
     // ── Accessors ─────────────────────────────────────────────────
 

@@ -36,18 +36,45 @@
 </div>
 
 @forelse($pendingTasks as $task)
-<div class="sv-task-card sv-task-card--pending">
+<div class="sv-task-card 
+    {{ $task->status === 'returned_to_supervisor' 
+        ? 'sv-task-card--returned' 
+        : 'sv-task-card--pending' }}">
+        
     <div class="sv-task-card-top">
+
+    @if($task->status === 'returned_to_supervisor' && $task->manager_note)
+    <div style="margin-top:8px; padding:10px; background:#fde8e8; border-radius:8px; font-size:13px; color:#c62828;">
+        <strong>Catatan Manager:</strong><br>
+        {{ $task->manager_note }}
+    </div>
+@endif
+
         <div class="sv-room-badge">{{ $task->room->room_number }}</div>
         <div class="sv-task-info">
-            <div class="sv-task-room">Kamar {{ $task->room->room_number }}
-                <span class="sv-room-type">· {{ ucfirst($task->room->room_type) }}</span>
-            </div>
+           <div class="sv-task-room">
+    Kamar {{ $task->room->room_number }}
+
+    @if($task->status === 'returned_to_supervisor')
+        <span style="color:#e53935; font-weight:600; margin-left:6px;">
+            ↩ Revisi dari Manager
+        </span>
+    @endif
+
+    <span class="sv-room-type">· {{ ucfirst($task->room->room_type) }}</span>
+</div>
             <div class="sv-task-meta">
                 👤 {{ $task->assignedUser->name ?? '-' }}
-                · Selesai {{ $task->submitted_at?->format('H:i') ?? '-' }}
-                @if($task->submitted_at)
-                    · {{ $task->submitted_at->diffForHumans() }}
+                @if($task->status === 'returned_to_supervisor')
+                    · Dikembalikan Manager
+                    @if($task->updated_at)
+                        · {{ $task->updated_at->diffForHumans() }}
+                    @endif
+                @else
+                    · Selesai {{ $task->submitted_at?->format('H:i') ?? '-' }}
+                    @if($task->submitted_at)
+                        · {{ $task->submitted_at->diffForHumans() }}
+                    @endif
                 @endif
             </div>
         </div>

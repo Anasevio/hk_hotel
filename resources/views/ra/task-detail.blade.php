@@ -30,7 +30,25 @@
     {{-- ══════════════════════════════════════════
          KONDISI 1: PENDING / RETURNED — belum / perlu diulang
          ══════════════════════════════════════════ --}}
-    @if(in_array($task->status, ['pending', 'returned_to_ra']))
+    @if($task->status === 'pending' && !$task->sop_viewed_at)
+
+    {{-- SOP SCREEN --}}
+    <div class="start-screen">
+        <h3>SOP (Standard Operating Procedure)</h3>
+
+        <ul>
+            @foreach($task->checklists as $item)
+                <li>{{ $item->name }}</li>
+            @endforeach
+        </ul>
+
+        <form method="POST" action="{{ route('ra.tasks.sopDone', $task->id) }}">
+            @csrf
+            <button class="btn-start">✔ Saya Sudah Baca SOP</button>
+        </form>
+    </div>
+
+@elseif(in_array($task->status, ['pending', 'returned_to_ra']))
 
         <div class="start-screen">
             @if($task->status === 'returned_to_ra')
@@ -445,6 +463,15 @@ tabOrder.forEach((key, i) => {
 
 let activeIdx = 0;
 
+function updateCheckAllState(checkAll, key) {
+    const allValues = Object.values(checked[key]).flat();
+    const total = allValues.length;
+    const done  = allValues.filter(v => v).length;
+
+    checkAll.checked = done === total;
+    checkAll.indeterminate = done > 0 && done < total;
+}
+
 function totalOf(key) {
     return Object.values(data[key].sections).reduce((s, items) => s + items.length, 0);
 }
@@ -494,6 +521,43 @@ function render() {
     const cl = document.getElementById('checklist');
     cl.innerHTML = '';
 
+    // ✅ CHECK ALL
+    const checkAllWrapper = document.createElement('div');
+    checkAllWrapper.style.marginBottom = '10px';
+
+    const checkAll = document.createElement('input');
+    checkAll.type = 'checkbox';
+    checkAll.id = 'checkAll';
+
+    const label = document.createElement('label');
+    label.textContent = ' Checklist Semua';
+    label.prepend(checkAll);
+
+    checkAllWrapper.appendChild(label);
+    cl.appendChild(checkAllWrapper);
+    updateCheckAllState(checkAll, key);
+
+    checkAll.addEventListener('change', () => {
+        Object.keys(checked[key]).forEach(sec => {
+            checked[key][sec] = checked[key][sec].map(() => checkAll.checked);
+        });
+
+        document.querySelectorAll('#checklist input[type=checkbox]')
+    .forEach(cb => {
+        cb.checked = checkAll.checked;
+
+        // 🔥 TAMBAHAN INI
+        const parent = cb.closest('.cl-item');
+        if (parent) {
+            parent.classList.toggle('checked', checkAll.checked);
+        }
+    });
+        updateProgress();
+        updateButtons();
+
+        updateCheckAllState(checkAll, key);
+    });
+
     const multiSection = Object.keys(sections).filter(s => sections[s].length > 0).length > 1;
 
     Object.entries(sections).forEach(([secTitle, items]) => {
@@ -528,6 +592,8 @@ function render() {
 
                 updateProgress();
                 updateButtons();
+
+                updateCheckAllState(checkAll, key);
 
                 // only update tabs when complete
                 if (isTabComplete(key)) {

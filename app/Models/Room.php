@@ -25,12 +25,17 @@ class Room extends Model
     }
 
     // Tugas aktif (yang sedang berjalan, bukan completed)
-    public function activeTask()
-    {
-        return $this->hasOne(Task::class)
-            ->whereNotIn('status', ['completed'])
-            ->latest();
-    }
+ public function activeTask()
+{
+    return $this->hasOne(Task::class)
+        ->whereIn('status', [
+            'pending',
+            'in_progress',
+            'returned_to_ra',
+            'returned_to_supervisor' // 🔥 TAMBAH INI
+        ])
+        ->latestOfMany();
+}
 
     // Log perubahan status kamar ini
     public function statusLogs()

@@ -18,7 +18,7 @@ class InspectionController extends Controller
         // 🔥 TASK MENUNGGU APPROVE MANAGER
         $pendingTasks = Task::with(['room','assignedUser','supervisor'])
             ->where('status', 'pending_manager')
-            ->latest('supervisor_approved_at')
+            ->latest('updated_at')
             ->paginate(10, ['*'], 'pending_page');
 
         // 🔍 HISTORY (SUDAH DI APPROVE MANAGER)
@@ -70,7 +70,7 @@ class InspectionController extends Controller
      */
     public function show(Task $task)
     {
-        abort_if($task->status !== 'pending_manager', 403);
+        abort_if(!in_array($task->status, ['pending_manager', 'returned_to_supervisor']), 403);
 
         $task->load([
             'room',
@@ -88,7 +88,7 @@ class InspectionController extends Controller
      */
     public function approve(Request $request, Task $task)
     {
-        abort_if($task->status !== 'pending_manager', 403);
+        abort_if(!in_array($task->status, ['pending_manager', 'returned_to_supervisor']), 403);
 
         $task->update([
             'status'       => 'completed',
@@ -117,7 +117,7 @@ class InspectionController extends Controller
      */
     public function returnToSupervisor(Request $request, Task $task)
     {
-        abort_if($task->status !== 'pending_manager', 403);
+        abort_if(!in_array($task->status, ['pending_manager', 'returned_to_supervisor']), 403);
 
         $request->validate([
             'note' => 'required|string|max:500'
@@ -125,11 +125,13 @@ class InspectionController extends Controller
 
         $task->update([
             'status'       => 'returned_to_supervisor',
-            'manager_note' => $request->note
+            'manager_note' => $request->note,
+            'submitted_at' => now() // 🔥 TAMBAHAN PENTING
         ]);
 
-        return back()->with('success',
-            "Tugas kamar {$task->room->room_number} dikembalikan ke Supervisor."
-        );
+        return redirect()->route('manager.inspections.index')
+    ->with('success',
+        "Tugas kamar {$task->room->room_number} dikembalikan ke Supervisor."
+    );
     }
 }

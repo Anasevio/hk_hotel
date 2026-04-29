@@ -14,10 +14,13 @@ class TaskController extends Controller
     public function index()
     {
         // Task menunggu approval supervisor
-        $pendingTasks = Task::where('status', 'pending_supervisor')
-            ->with(['room', 'assignedUser'])
-            ->latest('submitted_at')
-            ->get();
+        $pendingTasks = Task::whereIn('status', [
+        'pending_supervisor',
+        'returned_to_supervisor' // 🔥 TAMBAH INI
+    ])
+        ->with(['room', 'assignedUser'])
+        ->latest('updated_at')
+        ->get();
 
         // Task aktif (monitoring)
         $activeTasks = Task::whereIn('status', [
@@ -69,14 +72,15 @@ class TaskController extends Controller
             'note' => 'nullable|string|max:1000'
         ]);
 
-        if ($task->status !== 'pending_supervisor') {
-            return back()->with('error', 'Task tidak bisa di-approve.');
-        }
+        if (!in_array($task->status, ['pending_supervisor', 'returned_to_supervisor'])) {
+    return back()->with('error', 'Task tidak bisa di-approve.');
+}
 
         $task->update([
             'status' => 'pending_manager',
             'supervisor_note' => $request->note,
             'supervisor_approved_at' => now(),
+             'manager_note' => null // 🔥 reset biar bersih
         ]);
 
         return redirect()
@@ -93,9 +97,9 @@ class TaskController extends Controller
             'note' => 'required|string|max:1000'
         ]);
 
-        if ($task->status !== 'pending_supervisor') {
-            return back()->with('error', 'Task tidak bisa dikembalikan.');
-        }
+        if (!in_array($task->status, ['pending_supervisor', 'returned_to_supervisor'])) {
+    return back()->with('error', 'Task tidak bisa dikembalikan.');
+}
 
         $task->update([
             'status' => 'returned_to_ra',

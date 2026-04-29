@@ -25,6 +25,19 @@ class TaskController extends Controller
         return view('ra.task-detail', compact('task'));
     }
 
+    public function sopDone(Task $task)
+{
+    abort_if($task->assigned_to !== auth()->id(), 403);
+
+   if (!$task->sop_viewed_at) {
+    $task->update([
+        'sop_viewed_at' => now()
+    ]);
+}
+
+    return back()->with('success', 'SOP sudah dibaca.');
+}
+
     // ── Start task ────────────────────────────────────────────────
     public function start(Task $task)
     {
@@ -33,6 +46,10 @@ class TaskController extends Controller
         if (!in_array($task->status, ['pending', 'returned_to_ra'])) {
             return back()->with('error', "Tugas tidak bisa dimulai — status: {$task->status_label}");
         }
+
+        if (!$task->sop_viewed_at) {
+        return back()->with('error', 'Harus baca SOP dulu.');
+}
 
         $task->update([
             'status'     => 'in_progress',

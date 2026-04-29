@@ -14,10 +14,14 @@ class DashboardController extends Controller
         $myRooms = Room::where('assigned_to', $user->id)->get();
 
         $activeTask = Task::where('assigned_to', $user->id)
-            ->whereNotIn('status', ['completed', 'cancelled'])
-            ->with('room')
-            ->latest()
-            ->first();
+    ->whereIn('status', [
+        'pending',
+        'in_progress',
+        'returned_to_ra'
+    ])
+    ->with('room')
+    ->latest()
+    ->first();
 
         $completedToday = Task::where('assigned_to', $user->id)
             ->where('status', 'completed')

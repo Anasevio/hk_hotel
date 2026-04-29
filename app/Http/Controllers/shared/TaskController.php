@@ -76,7 +76,11 @@ class TaskController extends Controller
 
         $task = $room->tasks()
             ->where('assigned_to', auth()->id())
-            ->whereNotIn('status', ['completed'])
+            ->whereIn('status', [
+                'pending',
+                'in_progress',
+                'returned_to_ra'
+            ])
             ->with(['preparationChecklists', 'cleaningChecklists', 'assignedByUser'])
             ->latest()
             ->first();

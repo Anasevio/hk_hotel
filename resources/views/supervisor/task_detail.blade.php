@@ -112,7 +112,7 @@
 {{-- ══════════════════════════════════════════
      AKSI: APPROVE / KEMBALIKAN
      ══════════════════════════════════════════ --}}
-@if($task->status === 'pending_supervisor')
+@if(in_array($task->status, ['pending_supervisor', 'returned_to_supervisor']))
 <div class="sv-action-card">
 
     {{-- Approve --}}

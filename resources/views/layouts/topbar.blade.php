@@ -29,10 +29,7 @@
             <div class="uname">{{ auth()->user()->name }}</div>
             <div class="urole">{{ ucfirst(auth()->user()->role) }}</div>
         </div>
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="btn-logout">Logout</button>
-        </form>
+        
     </div>
 </div>
 
