@@ -30,26 +30,9 @@
     {{-- ══════════════════════════════════════════
          KONDISI 1: PENDING / RETURNED — belum / perlu diulang
          ══════════════════════════════════════════ --}}
-    @if($task->status === 'pending' && !$task->sop_viewed_at)
 
-    {{-- SOP SCREEN --}}
-    <div class="start-screen">
-        <h3>SOP (Standard Operating Procedure)</h3>
 
-        <ul>
-            @foreach($task->checklists as $item)
-                <li>{{ $item->name }}</li>
-            @endforeach
-        </ul>
-
-        <form method="POST" action="{{ route('ra.tasks.sopDone', $task->id) }}">
-            @csrf
-            <button class="btn-start">✔ Saya Sudah Baca SOP</button>
-        </form>
-    </div>
-
-@elseif(in_array($task->status, ['pending', 'returned_to_ra']))
-
+@if(in_array($task->status, ['pending', 'returned_to_ra']))
         <div class="start-screen">
             @if($task->status === 'returned_to_ra')
             <h3>Perbaiki & Mulai Ulang</h3>
