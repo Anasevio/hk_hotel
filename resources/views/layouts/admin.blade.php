@@ -12,14 +12,11 @@
     @stack('styles')
 </head>
 <body>
-<header class="topbar">
-    <button class="hamburger sidebar-toggle">☰</button>
-</header>
 
+<button class="hamburger small sidebar-toggle">☰</button>
 <div class="dashboard-wrapper" id="dashWrapper">
     <aside class="sidebar">
         <div class="sidebar-top">
-            <button class="hamburger small sidebar-toggle">☰</button>
             <div class="side-logos">
                 <img src="{{ asset('images/Logo SIG W.png') }}" onerror="this.style.display='none'" alt="">
                 <img src="{{ asset('images/LOGO PH.png') }}" onerror="this.style.display='none'" alt="">
