@@ -28,7 +28,7 @@ class TaskController extends Controller
                 'in_progress',
                 'returned_to_ra'
             ])
-            ->with(['room', 'assignedUser'])
+            ->with(['room', 'assignedUser', 'assignedByUser', 'supervisor', 'manager'])
             ->latest()
             ->get();
 
@@ -80,7 +80,8 @@ class TaskController extends Controller
             'status' => 'pending_manager',
             'supervisor_note' => $request->note,
             'supervisor_approved_at' => now(),
-             'manager_note' => null // 🔥 reset biar bersih
+            'supervisor_id' => auth()->id(), // 🔥 TAMBAH INI
+            'manager_note' => null
         ]);
 
         return redirect()

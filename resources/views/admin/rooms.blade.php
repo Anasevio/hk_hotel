@@ -143,8 +143,6 @@
                     <label class="form-label">Ubah Status Kamar</label>
                     <select name="status" id="status-select" class="form-control">
                         <option value="vacant_dirty">Vacant Dirty</option>
-                        <option value="vacant_clean">Vacant Clean</option>
-                        <option value="vacant_ready">Vacant Ready</option>
                         <option value="occupied">Occupied</option>
                         <option value="expected_departure">Expected Departure</option>
                     </select>

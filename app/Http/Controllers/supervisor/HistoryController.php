@@ -10,9 +10,14 @@ class HistoryController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Task::with(['room','assignedUser'])
-            ->where('supervisor_id', auth()->id()) // ✅ pakai ini
-            ->where('updated_at', '>=', now()->subDays(30));
+        $query = Task::with([
+            'room',
+            'assignedUser',
+            'supervisor',
+            'manager'
+        ])
+        ->where('supervisor_id', auth()->id())
+        ->where('updated_at', '>=', now()->subDays(30));
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);

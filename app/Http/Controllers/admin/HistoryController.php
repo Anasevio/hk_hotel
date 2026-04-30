@@ -11,9 +11,9 @@ class HistoryController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Task::with(['room', 'assignedUser'])
-            ->whereIn('status', ['completed', 'cancelled'])
-            ->where('updated_at', '>=', now()->subDays(30));
+       $query = Task::with(['room', 'assignedUser', 'supervisor', 'manager'])
+    ->whereIn('status', ['completed', 'cancelled'])
+    ->where('updated_at', '>=', now()->subDays(30));
 
         // 🔍 Filter tanggal
         if ($request->filled('date')) {
