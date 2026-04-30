@@ -31,8 +31,8 @@ class HistoryController extends Controller
                 $q->where('room_number', 'like', '%' . $request->search . '%');
             });
         }
-
-        $history = $query->latest()->paginate(5)->withQueryString();
+        $perPage = $request->get('per_page', 10);
+        $history = $query->latest()->paginate(10)->withQueryString();
 
         return view('ra.history', compact('history'));
     }

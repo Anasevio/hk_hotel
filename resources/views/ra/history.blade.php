@@ -121,9 +121,14 @@
 </tbody>
                 </table>
             </div>
-
+                @if ($history->count())
+                    <div class="pagination-info">
+                        Menampilkan {{ $history->firstItem() }} - {{ $history->lastItem() }}
+                        dari {{ $history->total() }} data
+                    </div>
+                @endif
                 <div class="pagination">
-                 {{ $history->links('pagination::bootstrap-5') }}
+                 {{ $history->onEachSide(1)->links('vendor.pagination.bootstrap-5') }}
                 </div>
             </div>
 

@@ -68,6 +68,7 @@
     <table>
                     <thead>
                         <tr>
+                            <th>Tanggal</th>
                             <th>Nama RA</th>
                             <th>SuperVisor</th>
                             <th>Kamar</th>
@@ -77,6 +78,9 @@
                     <tbody>
     @forelse($history as $task)
 <tr>
+    <!-- Tanggal --> 
+    <td>
+        {{ $task->created_at->format('d M Y') }}
     <!-- RA -->
     <td>
         {{ $task->assignedUser->name ?? '-' }}
@@ -101,7 +105,7 @@
 </tr>
 @empty
 <tr>
-    <td colspan="4" style="text-align:center;">
+    <td colspan="5" style="text-align:center;">
         Tidak ada data
     </td>
 </tr>
@@ -109,9 +113,14 @@
 </tbody>
                 </table>
             </div>
-
+                @if ($history->count())
+                    <div class="pagination-info">
+                        Menampilkan {{ $history->firstItem() }} - {{ $history->lastItem() }}
+                        dari {{ $history->total() }} data
+                    </div>
+                @endif
                 <div class="pagination">
-                 {{ $history->links('pagination::bootstrap-5') }}
+                 {{ $history->onEachSide(1)->links('vendor.pagination.bootstrap-5') }}
                 </div>
             </div>
 

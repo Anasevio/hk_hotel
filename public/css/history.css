@@ -291,39 +291,73 @@ tbody tr:hover {
     box-shadow: 0 8px 16px rgba(194, 113, 143, 0.25);
 }
 
+/* ================= PAGINATION FIX FINAL ================= */
+
 .pagination {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
     justify-content: center;
-    padding: 12px 6px;
-    background: rgba(255, 255, 255, 0.72);
-    border-radius: 16px;
-    border: 1px solid rgba(58, 58, 58, 0.12);
-}
-
-.pagination span,
-.pagination button {
-    min-width: 46px;
-    padding: 9px 12px;
-    border-radius: 999px;
+    gap: 8px;
+    padding: 12px;
+    background: transparent; /* lebih clean */
     border: none;
-    background: rgba(255, 255, 255, 0.65);
-    color: var(--text-main);
-    cursor: pointer;
-    font-weight: 600;
-    transition: transform var(--transition), background var(--transition);
+    flex-wrap: wrap;
+}
+.pagination-info {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
 }
 
-.pagination button:hover {
-    transform: translateY(-1px);
+/* item wrapper */
+.pagination .page-item {
+    list-style: none;
+}
+
+/* tombol angka */
+.pagination .page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border-radius: 50% !important; /* 🔥 BULAT */
+    border: 1px solid rgba(194, 113, 143, 0.4);
     background: rgba(255, 255, 255, 0.85);
+    color: var(--text-main);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.25s ease;
 }
 
-.pagination .active {
-    background: var(--primary-pink);
-    color: var(--white);
-    box-shadow: 0 10px 18px rgba(194, 113, 143, 0.25);
+/* hover */
+.pagination .page-link:hover {
+    background: var(--secondary-pink);
+    transform: translateY(-2px);
+}
+
+/* 🔥 ACTIVE (yang dipilih) */
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, var(--primary-pink), var(--primary-dark));
+    color: white;
+    border: none;
+    box-shadow: 0 10px 20px rgba(194, 113, 143, 0.35);
+    transform: scale(1.08);
+}
+
+/* disabled (kalau masih ada prev/next) */
+.pagination .page-item.disabled .page-link {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* biar tombol next/prev (kalau ada) tetap pill */
+.pagination .page-item:first-child .page-link,
+.pagination .page-item:last-child .page-link {
+    border-radius: 999px !important;
+    width: auto;
+    padding: 8px 16px;
 }
 
 /* Responsive */
