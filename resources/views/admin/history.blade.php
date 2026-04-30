@@ -1,30 +1,13 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin - Riwayat Tugas</title>
-<link rel="stylesheet" href="{{ asset('css/admin/history_admin.css') }}">
-</head>
+@extends('layouts.admin')
+@section('title', 'Riwayat Tugas')
+@section('page-title', 'Riwayat Tugas')
+@section('page-subtitle', 'Lihat riwayat aktivitas dan tugas')
 
-<body>
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/history_admin.css') }}">
+@endpush
 
-<!-- TOPBAR -->
-<header class="topbar">
-  <div class="logo">
-    <h2>HK Perhotelan</h2>
-    <span>Admin Panel</span>
-  </div>
-
-  <div class="user">
-    <span>Admin</span>
-    <form action="{{ route('logout') }}" method="POST">
-    @csrf
-    <button type="submit" class="logout">Logout</button>
-</form>
-  </div>
-</header>
-
+@section('content')
 <!-- CONTAINER -->
 <div class="container">
 
@@ -139,6 +122,4 @@
   </div>
 
 </div>
-
-</body>
-</html>
+@endsection
