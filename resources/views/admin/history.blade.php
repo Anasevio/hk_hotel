@@ -1,7 +1,5 @@
 @extends('layouts.admin')
 @section('title', 'Riwayat Tugas')
-@section('page-title', 'Riwayat Tugas')
-@section('page-subtitle', 'Lihat riwayat aktivitas dan tugas')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/admin/history_admin.css') }}">

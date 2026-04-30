@@ -1,6 +1,6 @@
 :root {
-  --primary-pink: #c2718f; /* Lebih gelap & rich */
-  --primary-dark: #a85578; /* Untuk hover & gradient */
+  --primary-pink: #7a0200; /* Lebih gelap & rich */
+  --primary-dark: #7a0200; /* Untuk hover & gradient */
   --secondary-pink: #edbbca; /* Lebih terlihat */
   --light-pink: #faeaee; /* Subtle bg */
   --bg-main: #f5f1e8;
@@ -102,7 +102,7 @@ input {
 
 .filter-box input:focus,
 .filter-box select:focus {
-  border-color: rgba(173, 117, 147, 0.95);
+  border-color: #7a0200;
   box-shadow: 0 0 0 4px rgba(194, 116, 143, 0.18);
 }
 
